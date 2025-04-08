@@ -3,7 +3,7 @@
 <!-- Firebase 初始化 -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-import { getDatabase, ref, get, set, push } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+import { getDatabase, ref, get, set, push, update } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
 
 const firebaseConfig = {
@@ -25,10 +25,12 @@ onAuthStateChanged(auth, (user) => {
     loadOrders(user.uid);
     document.getElementById('userEmail').textContent = user.email;
     document.getElementById('logoutBtn').style.display = 'inline-block';
+    document.getElementById('adminPanel').style.display = 'block';
   } else {
     console.log('用户未登录');
     document.getElementById('userEmail').textContent = '';
     document.getElementById('logoutBtn').style.display = 'none';
+    document.getElementById('adminPanel').style.display = 'none';
   }
 });
 
@@ -116,10 +118,35 @@ async function loadOrders(userId) {
   const ordersRef = ref(db, 'orders');
   const snapshot = await get(ordersRef);
   const allOrders = snapshot.val() || {};
-  const userOrders = Object.values(allOrders).filter(order => order.userId === userId);
+  const userOrders = Object.entries(allOrders).filter(([key, order]) => order.userId === userId);
   const list = document.getElementById('orderList');
-  list.innerHTML = userOrders.length ? userOrders.map(o => `<li class="list-group-item">产品ID: ${o.productId}，状态: ${o.status}</li>`).join('') : '<li class="list-group-item">暂无订单</li>';
+  list.innerHTML = userOrders.length ? userOrders.map(([key, o]) => `
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      产品ID: ${o.productId}，状态: <span>${o.status}</span>
+    </li>`).join('') : '<li class="list-group-item">暂无订单</li>';
+
+  // 加载后台订单管理表格
+  const table = document.getElementById('orderTableBody');
+  if (!table) return;
+  table.innerHTML = Object.entries(allOrders).map(([key, o]) => `
+    <tr>
+      <td>${key}</td>
+      <td>${o.userId}</td>
+      <td>${o.productId}</td>
+      <td>${o.status}</td>
+      <td>
+        <button class="btn btn-sm btn-success" onclick="updateOrderStatus('${key}', '已发货')">发货</button>
+        <button class="btn btn-sm btn-danger" onclick="updateOrderStatus('${key}', '已取消')">取消</button>
+      </td>
+    </tr>`).join('');
 }
+
+window.updateOrderStatus = async function(orderId, status) {
+  await update(ref(db, `orders/${orderId}`), { status });
+  alert(`订单 ${orderId} 状态更新为 ${status}`);
+  const user = auth.currentUser;
+  if (user) loadOrders(user.uid);
+};
 </script>
 
 <!-- 用户注册登录 -->
@@ -165,3 +192,11 @@ async function loadOrders(userId) {
   <ul id="orderList" class="list-group"></ul>
 </div>
 
+<!-- 后台订单管理 -->
+<div class="container my-5" id="adminPanel" style="display:none;">
+  <h3>订单管理后台</h3>
+  <table class="table table-bordered">
+    <thead><tr><th>ID</th><th>用户</th><th>产品</th><th>状态</th><th>操作</th></tr></thead>
+    <tbody id="orderTableBody"></tbody>
+  </table>
+</div>
