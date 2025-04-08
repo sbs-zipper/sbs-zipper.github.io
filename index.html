@@ -1,9 +1,10 @@
 <!-- 针对生产环境的功能扩展实现方案 -->
 
-<!-- 一、产品数据库对接 -->
+<!-- Firebase 初始化 -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+import { getDatabase, ref, get, set, push } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "YOUR_API_KEY",
@@ -16,13 +17,31 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+const auth = getAuth(app);
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    loadProducts();
+    loadOrders(user.uid);
+    document.getElementById('userEmail').textContent = user.email;
+    document.getElementById('logoutBtn').style.display = 'inline-block';
+  } else {
+    console.log('用户未登录');
+    document.getElementById('userEmail').textContent = '';
+    document.getElementById('logoutBtn').style.display = 'none';
+  }
+});
 
 async function loadProducts() {
   const productsRef = ref(db, 'products');
   const snapshot = await get(productsRef);
   const products = snapshot.val();
   const container = document.getElementById('productsContainer');
-  container.innerHTML = Object.values(products).map(product => `
+  if (!products) {
+    container.innerHTML = '<p>暂无产品</p>';
+    return;
+  }
+  container.innerHTML = Object.entries(products).map(([id, product]) => `
     <div class="col-md-4 mb-4">
       <div class="product-card h-100">
         <img src="${product.images[0]}" class="product-img w-100" alt="${product.name}" loading="lazy">
@@ -30,8 +49,8 @@ async function loadProducts() {
           <h5>${product.name}</h5>
           <p class="text-muted small">${product.description}</p>
           <div class="d-flex justify-content-between">
-            <span class="text-success fw-bold">\u00a5${product.basePrice}</span>
-            <button class="btn btn-sm btn-primary" onclick="showInquiryModal('${product.id}')">立即询价</button>
+            <span class="text-success fw-bold">¥${product.basePrice}</span>
+            <button class="btn btn-sm btn-primary" onclick="orderProduct('${id}')">下单</button>
           </div>
         </div>
       </div>
@@ -39,102 +58,110 @@ async function loadProducts() {
   `).join('');
 }
 
-window.addEventListener('DOMContentLoaded', loadProducts);
-</script>
+window.orderProduct = async function(productId) {
+  const user = auth.currentUser;
+  if (!user) return alert('请先登录再下单');
 
-<!-- 二、在线询价表单 -->
-<div class="modal fade" id="inquiryModal">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">定制需求提交</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-      </div>
-      <form id="inquiryForm" onsubmit="handleSubmit(event)">
-        <div class="modal-body">
-          <input type="hidden" id="productId">
-          <div class="row g-3">
-            <div class="col-md-6">
-              <label class="form-label">联系人姓名</label>
-              <input type="text" class="form-control" required>
-            </div>
-            <div class="col-md-6">
-              <label class="form-label">联系电话</label>
-              <input type="tel" class="form-control" pattern="[0-9]{11}" required>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">预估数量（条）</label>
-              <input type="number" class="form-control" min="1000" value="5000" required>
-            </div>
-            <div class="col-md-4">
-              <label class="form-label">期望交货日期</label>
-              <input type="date" class="form-control" min="${new Date().toISOString().split('T')[0]}">
-            </div>
-            <div class="col-md-12">
-              <label class="form-label">特殊要求说明</label>
-              <textarea class="form-control" rows="3"></textarea>
-            </div>
-          </div>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary w-100">提交需求</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
+  const orderRef = push(ref(db, 'orders'));
+  await set(orderRef, {
+    userId: user.uid,
+    productId: productId,
+    status: '待处理',
+    timestamp: Date.now()
+  });
 
-<script>
-async function handleSubmit(e) {
+  alert('下单成功！');
+  loadOrders(user.uid);
+};
+
+window.submitProduct = async function(e) {
   e.preventDefault();
-  const formData = new FormData(e.target);
-  const payload = Object.fromEntries(formData);
-  try {
-    const response = await fetch('/api/inquiry', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
-    if(response.ok) {
-      alert('需求已提交，客服将在1小时内联系您');
-      bootstrap.Modal.getInstance('#inquiryModal').hide();
-    }
-  } catch(error) {
-    console.error('提交失败:', error);
-  }
+  const data = Object.fromEntries(new FormData(e.target));
+  const newRef = push(ref(db, 'products'));
+  await set(newRef, {
+    name: data.name,
+    description: data.description,
+    basePrice: data.basePrice,
+    images: [data.image],
+    tags: data.tags.split(',')
+  });
+  alert('产品已上传');
+  e.target.reset();
+  loadProducts();
+};
+
+window.register = function(e) {
+  e.preventDefault();
+  const email = document.getElementById('regEmail').value;
+  const password = document.getElementById('regPassword').value;
+  createUserWithEmailAndPassword(auth, email, password)
+    .then(() => alert('注册成功'))
+    .catch(err => alert(err.message));
+};
+
+window.login = function(e) {
+  e.preventDefault();
+  const email = document.getElementById('loginEmail').value;
+  const password = document.getElementById('loginPassword').value;
+  signInWithEmailAndPassword(auth, email, password)
+    .then(() => alert('登录成功'))
+    .catch(err => alert(err.message));
+};
+
+window.logout = function() {
+  signOut(auth).then(() => alert('已退出登录'));
+};
+
+async function loadOrders(userId) {
+  const ordersRef = ref(db, 'orders');
+  const snapshot = await get(ordersRef);
+  const allOrders = snapshot.val() || {};
+  const userOrders = Object.values(allOrders).filter(order => order.userId === userId);
+  const list = document.getElementById('orderList');
+  list.innerHTML = userOrders.length ? userOrders.map(o => `<li class="list-group-item">产品ID: ${o.productId}，状态: ${o.status}</li>`).join('') : '<li class="list-group-item">暂无订单</li>';
 }
 </script>
 
-<!-- 三、智能推荐算法 -->
-<script>
-const recommendationEngine = {
-  viewedProducts: [],
-  trackView(productId) {
-    this.viewedProducts = [...new Set([productId, ...this.viewedProducts])];
-    localStorage.setItem('viewHistory', JSON.stringify(this.viewedProducts));
-  },
-  async getRecommendations() {
-    const history = JSON.parse(localStorage.getItem('viewHistory') || '[]');
-    const snapshot = await get(ref(db, 'products'));
-    const allProducts = Object.values(snapshot.val());
-    return allProducts.filter(product => {
-      return !history.includes(product.id) && 
-        product.tags.some(tag => this.viewedProducts.some(vp => vp.tags.includes(tag)));
-    }).slice(0, 4);
-  },
-  renderRecommendations() {
-    this.getRecommendations().then(products => {
-      const container = document.getElementById('recommendations');
-      container.innerHTML = products.map(prod => `
-        <div class="col-3">
-          <a href="/product/${prod.id}" class="recommend-card">
-            <img src="${prod.thumbnail}" alt="${prod.name}">
-            <h6>${prod.name}</h6>
-          </a>
-        </div>
-      `).join('');
-    });
-  }
-};
-</script>
+<!-- 用户注册登录 -->
+<div class="container my-5">
+  <h3>用户注册</h3>
+  <form onsubmit="register(event)" class="mb-4">
+    <input type="email" id="regEmail" placeholder="邮箱" required class="form-control mb-2">
+    <input type="password" id="regPassword" placeholder="密码" required class="form-control mb-2">
+    <button class="btn btn-success">注册</button>
+  </form>
+
+  <h3>用户登录</h3>
+  <form onsubmit="login(event)">
+    <input type="email" id="loginEmail" placeholder="邮箱" required class="form-control mb-2">
+    <input type="password" id="loginPassword" placeholder="密码" required class="form-control mb-2">
+    <button class="btn btn-primary">登录</button>
+  </form>
+  <p>当前登录用户: <span id="userEmail"></span> <button id="logoutBtn" onclick="logout()" class="btn btn-sm btn-outline-danger" style="display:none;">退出</button></p>
+</div>
+
+<!-- 产品上传表单（供应商） -->
+<div class="container my-5">
+  <h3>供应商上传拉链信息</h3>
+  <form onsubmit="submitProduct(event)">
+    <input name="name" placeholder="拉链名称" required class="form-control mb-2">
+    <input name="description" placeholder="描述" required class="form-control mb-2">
+    <input name="basePrice" placeholder="价格" type="number" required class="form-control mb-2">
+    <input name="image" placeholder="图片URL" required class="form-control mb-2">
+    <input name="tags" placeholder="标签 (用英文逗号分隔)" required class="form-control mb-2">
+    <button class="btn btn-warning">上传</button>
+  </form>
+</div>
+
+<!-- 产品展示区 -->
+<div class="container">
+  <h3>产品列表</h3>
+  <div class="row" id="productsContainer"></div>
+</div>
+
+<!-- 用户订单历史 -->
+<div class="container my-5">
+  <h3>我的订单</h3>
+  <ul id="orderList" class="list-group"></ul>
+</div>
 
