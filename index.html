@@ -1,165 +1,140 @@
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>厦门和新拉链产品数据中心</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
-  <style>
-    :root {
-      --primary: #2c7be5;
-      --secondary: #6e84a3;
-      --success: #00ac69;
-      --warning: #f6c343;
-      --border-radius: 8px;
-      --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    body {
-      background: #f5f5f7;
-      padding: 1rem;
-      font-family: system-ui, sans-serif;
-    }
-    .price { color: var(--success); font-weight: bold; }
-    th.sort-asc::after { content: " ▲"; font-size: 0.8rem; }
-    th.sort-desc::after { content: " ▼"; font-size: 0.8rem; }
-  </style>
-</head>
-<body>
-<div class="container bg-white p-4 rounded shadow">
-  <h1 class="text-primary mb-3">厦门和新拉链产品数据中心</h1>
-  <input type="text" id="searchInput" class="form-control mb-3" placeholder="搜索产品，如品名、编号或拉片...">
+<!-- 针对生产环境的功能扩展实现方案 -->
 
-  <div class="table-responsive">
-    <table class="table table-hover table-bordered align-middle">
-      <thead class="table-primary sticky-top">
-        <tr>
-          <th data-sort="id">序号</th>
-          <th data-sort="code">编号</th>
-          <th data-sort="name">品名</th>
-          <th data-sort="pullTab">拉片</th>
-          <th data-sort="price">基准价格(30cm)</th>
-          <th data-sort="cmPrice">±1cm价格</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
-  </div>
+<!-- 一、产品数据库对接 -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
+import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
 
-  <div class="bg-light rounded p-3 mt-4">
-    <h2 class="text-primary">价格计算器</h2>
-    <div class="mb-2"><strong>当前产品：</strong><span id="currentProduct">未选择产品</span></div>
-    <div class="mb-2"><strong>基准价格 (30cm)：</strong><span id="basePrice" class="price">¥0.00</span></div>
-    <div class="mb-2"><strong>每厘米价格：</strong><span id="cmPrice">¥0.0000/cm</span></div>
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "zipperpro-cn.firebaseapp.com",
+  databaseURL: "https://zipperpro-cn-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "zipperpro-cn",
+  storageBucket: "zipperpro-cn.appspot.com",
+  appId: "YOUR_APP_ID"
+};
 
-    <div class="mb-3">
-      <label for="customLength" class="form-label">定制长度 (cm)</label>
-      <input type="number" id="customLength" class="form-control" min="5" max="300" step="0.1" placeholder="输入5-300之间的数字">
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+async function loadProducts() {
+  const productsRef = ref(db, 'products');
+  const snapshot = await get(productsRef);
+  const products = snapshot.val();
+  const container = document.getElementById('productsContainer');
+  container.innerHTML = Object.values(products).map(product => `
+    <div class="col-md-4 mb-4">
+      <div class="product-card h-100">
+        <img src="${product.images[0]}" class="product-img w-100" alt="${product.name}" loading="lazy">
+        <div class="p-3">
+          <h5>${product.name}</h5>
+          <p class="text-muted small">${product.description}</p>
+          <div class="d-flex justify-content-between">
+            <span class="text-success fw-bold">\u00a5${product.basePrice}</span>
+            <button class="btn btn-sm btn-primary" onclick="showInquiryModal('${product.id}')">立即询价</button>
+          </div>
+        </div>
+      </div>
     </div>
+  `).join('');
+}
 
-    <button id="calculateBtn" class="btn btn-primary w-100">计算总价</button>
+window.addEventListener('DOMContentLoaded', loadProducts);
+</script>
 
-    <div class="result mt-3" id="result" style="display: none;">
-      <div class="fw-bold">总价: <span id="totalPrice" class="price">¥0.0000</span></div>
-      <div id="calculationDetail" class="text-secondary small mt-1"></div>
-    </div>
-
-    <div class="history mt-3" id="history" style="display:none;">
-      <h5 class="text-primary">计算历史</h5>
-      <div id="historyList" class="small"></div>
+<!-- 二、在线询价表单 -->
+<div class="modal fade" id="inquiryModal">
+  <div class="modal-dialog modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">定制需求提交</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <form id="inquiryForm" onsubmit="handleSubmit(event)">
+        <div class="modal-body">
+          <input type="hidden" id="productId">
+          <div class="row g-3">
+            <div class="col-md-6">
+              <label class="form-label">联系人姓名</label>
+              <input type="text" class="form-control" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">联系电话</label>
+              <input type="tel" class="form-control" pattern="[0-9]{11}" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">预估数量（条）</label>
+              <input type="number" class="form-control" min="1000" value="5000" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">期望交货日期</label>
+              <input type="date" class="form-control" min="${new Date().toISOString().split('T')[0]}">
+            </div>
+            <div class="col-md-12">
+              <label class="form-label">特殊要求说明</label>
+              <textarea class="form-control" rows="3"></textarea>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary w-100">提交需求</button>
+        </div>
+      </form>
     </div>
   </div>
 </div>
 
 <script>
-  const products = [
-    { id: 1, code: "FB23020002", name: "5#隐形拉链，水滴拉片", pullTab: "水滴拉片", price: 1.93, cmPrice: 0.02 },
-    // ...其他产品数据保持不变...
-    { id: 27, code: "FB25020003", name: "M3.5#闭口方牙白枪", pullTab: "裤拉拉片", price: 1.396, cmPrice: 0.039 }
-  ];
-
-  let selectedProduct = null;
-  let filteredProducts = [...products];
-  let calculationHistory = [];
-
-  function renderTable() {
-    const tbody = document.getElementById('tableBody');
-    tbody.innerHTML = '';
-    filteredProducts.forEach(product => {
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${product.id}</td>
-        <td>${product.code}</td>
-        <td>${product.name}</td>
-        <td>${product.pullTab}</td>
-        <td class="price">¥${product.price.toFixed(2)}</td>
-        <td>¥${product.cmPrice.toFixed(4)}</td>
-      `;
-      row.addEventListener('click', () => selectProduct(product));
-      tbody.appendChild(row);
+async function handleSubmit(e) {
+  e.preventDefault();
+  const formData = new FormData(e.target);
+  const payload = Object.fromEntries(formData);
+  try {
+    const response = await fetch('/api/inquiry', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
     });
-    if (filteredProducts.length > 0 && !selectedProduct) selectProduct(filteredProducts[0]);
-  }
-
-  function selectProduct(product) {
-    selectedProduct = product;
-    document.getElementById('currentProduct').textContent = product.name;
-    document.getElementById('basePrice').textContent = `¥${product.price.toFixed(2)}`;
-    document.getElementById('cmPrice').textContent = `¥${product.cmPrice.toFixed(4)}/cm`;
-    document.getElementById('customLength').value = '';  // 清空输入框
-    document.getElementById('result').style.display = 'none';  // 隐藏结果
-  }
-
-  // 搜索功能
-  document.getElementById('searchInput').addEventListener('input', function() {
-    const q = this.value.trim().toLowerCase();
-    filteredProducts = products.filter(p =>
-      p.name.toLowerCase().includes(q) ||
-      p.code.toLowerCase().includes(q) ||
-      p.pullTab.toLowerCase().includes(q)
-    );
-    renderTable();
-  });
-
-  // 计算功能
-  document.getElementById('calculateBtn').addEventListener('click', function() {
-    const lengthInput = document.getElementById('customLength');
-    const length = parseFloat(lengthInput.value);
-    
-    if (!selectedProduct || isNaN(length)) {
-      alert("请先选择产品并输入有效长度");
-      return;
+    if(response.ok) {
+      alert('需求已提交，客服将在1小时内联系您');
+      bootstrap.Modal.getInstance('#inquiryModal').hide();
     }
-    
-    if (length < 5 || length > 300) {
-      alert("长度需在5-300厘米之间");
-      lengthInput.focus();
-      return;
-    }
-
-    const { price, cmPrice, name } = selectedProduct;
-    const delta = length - 30;
-    const total = (price + delta * cmPrice).toFixed(4);
-
-    // 更新显示
-    document.getElementById('result').style.display = 'block';
-    document.getElementById('totalPrice').textContent = `¥${total}`;
-    document.getElementById('calculationDetail').textContent = 
-      `${name}：基准30cm为¥${price.toFixed(2)}，每增减1cm为¥${cmPrice.toFixed(4)}，总长度${length}cm，总价¥${total}`;
-
-    // 记录历史
-    const historyItem = `${new Date().toLocaleString()} | ${name} | ${length}cm | ¥${total}`;
-    calculationHistory.unshift(historyItem);
-    updateHistory();
-  });
-
-  function updateHistory() {
-    const list = document.getElementById('historyList');
-    list.innerHTML = calculationHistory.map(item => `<div class="border-bottom py-1">${item}</div>`).join('');
-    document.getElementById('history').style.display = calculationHistory.length ? 'block' : 'none';
+  } catch(error) {
+    console.error('提交失败:', error);
   }
-
-  // 初始化
-  renderTable();
+}
 </script>
-</body>
-</html>
+
+<!-- 三、智能推荐算法 -->
+<script>
+const recommendationEngine = {
+  viewedProducts: [],
+  trackView(productId) {
+    this.viewedProducts = [...new Set([productId, ...this.viewedProducts])];
+    localStorage.setItem('viewHistory', JSON.stringify(this.viewedProducts));
+  },
+  async getRecommendations() {
+    const history = JSON.parse(localStorage.getItem('viewHistory') || '[]');
+    const snapshot = await get(ref(db, 'products'));
+    const allProducts = Object.values(snapshot.val());
+    return allProducts.filter(product => {
+      return !history.includes(product.id) && 
+        product.tags.some(tag => this.viewedProducts.some(vp => vp.tags.includes(tag)));
+    }).slice(0, 4);
+  },
+  renderRecommendations() {
+    this.getRecommendations().then(products => {
+      const container = document.getElementById('recommendations');
+      container.innerHTML = products.map(prod => `
+        <div class="col-3">
+          <a href="/product/${prod.id}" class="recommend-card">
+            <img src="${prod.thumbnail}" alt="${prod.name}">
+            <h6>${prod.name}</h6>
+          </a>
+        </div>
+      `).join('');
+    });
+  }
+};
+</script>
+
