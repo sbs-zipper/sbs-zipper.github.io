@@ -2,137 +2,260 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>拉链价格计算器</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智能拉链价格计算器</title>
     <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --error-color: #e74c3c;
+            --success-bg: #e8f6ef;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            max-width: 600px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: #f5f5f5;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            max-width: 680px;
+            margin: 2rem auto;
+            padding: 0 20px;
+            background: #f8f9fa;
         }
 
         .calculator {
-            background-color: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+        }
+
+        .calculator:hover {
+            transform: translateY(-2px);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 0.5rem;
         }
 
         .input-group {
-            margin-bottom: 15px;
+            margin-bottom: 1.2rem;
+            position: relative;
         }
 
         label {
             display: block;
-            margin-bottom: 5px;
-            color: #333;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+            font-weight: 500;
         }
 
         input {
             width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
+            padding: 0.8rem;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            transition: border-color 0.3s;
             font-size: 16px;
         }
 
+        input:focus {
+            border-color: var(--accent-color);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
+        }
+
+        .error-message {
+            color: var(--error-color);
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+            height: 1.2rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        button {
+            background: var(--accent-color);
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: 
+                background-color 0.3s,
+                transform 0.2s;
+        }
+
         button:hover {
-            background-color: #45a049;
+            background: #2980b9;
+            transform: scale(1.02);
+        }
+
+        button:active {
+            transform: scale(0.98);
         }
 
         #result {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: #e8f5e9;
-            border-radius: 4px;
-            display: none;
+            margin-top: 1.5rem;
+            padding: 1.5rem;
+            background: var(--success-bg);
+            border-radius: 6px;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: 
+                opacity 0.3s,
+                transform 0.3s;
+        }
+
+        .price-highlight {
+            color: #27ae60;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin: 0.5rem 0;
+        }
+
+        .calculation-steps {
+            color: #7f8c8d;
+            line-height: 1.6;
+            margin: 1rem 0;
         }
     </style>
 </head>
 <body>
     <div class="calculator">
-        <h2>拉链价格计算器</h2>
+        <h2>智能拉链计价器</h2>
         
         <div class="input-group">
-            <label for="baseLength">基准长度 (cm)：</label>
-            <input type="number" id="baseLength" step="0.1" required>
+            <label for="baseLength">基准长度 (cm)</label>
+            <input type="number" id="baseLength" step="0.1" placeholder="请输入基准长度" autofocus>
+            <div class="error-message" id="baseLengthError"></div>
         </div>
 
         <div class="input-group">
-            <label for="basePrice">基准价格 (元)：</label>
-            <input type="number" id="basePrice" step="0.01" required>
+            <label for="basePrice">基准价格 (¥)</label>
+            <input type="number" id="basePrice" step="0.01" placeholder="请输入基准价格">
+            <div class="error-message" id="basePriceError"></div>
         </div>
 
         <div class="input-group">
-            <label for="adjustment">每厘米调整价格 (元)：</label>
-            <input type="number" id="adjustment" step="0.01" required>
+            <label for="adjustment">长度调节单价 (¥/cm)</label>
+            <input type="number" id="adjustment" step="0.01" placeholder="请输入每厘米调整价格">
+            <div class="error-message" id="adjustmentError"></div>
         </div>
 
         <div class="input-group">
-            <label for="customLength">定制长度 (cm)：</label>
-            <input type="number" id="customLength" step="0.1" required>
+            <label for="customLength">定制长度 (cm)</label>
+            <input type="number" id="customLength" step="0.1" placeholder="请输入定制长度">
+            <div class="error-message" id="customLengthError"></div>
         </div>
 
-        <button onclick="calculatePrice()">立即计算</button>
+        <button id="calculateBtn">立即计算</button>
 
         <div id="result"></div>
     </div>
 
     <script>
-        function calculatePrice() {
-            // 获取输入元素
-            const baseLength = parseFloat(document.getElementById('baseLength').value);
-            const basePrice = parseFloat(document.getElementById('basePrice').value);
-            const adjustment = parseFloat(document.getElementById('adjustment').value);
-            const customLength = parseFloat(document.getElementById('customLength').value);
-            const resultDiv = document.getElementById('result');
-
-            // 验证输入有效性
-            if ([baseLength, basePrice, adjustment, customLength].some(isNaN)) {
-                showError("请输入有效的数值");
-                return;
+        // DOM元素缓存
+        const elements = {
+            baseLength: document.getElementById('baseLength'),
+            basePrice: document.getElementById('basePrice'),
+            adjustment: document.getElementById('adjustment'),
+            customLength: document.getElementById('customLength'),
+            result: document.getElementById('result'),
+            errors: {
+                baseLength: document.getElementById('baseLengthError'),
+                basePrice: document.getElementById('basePriceError'),
+                adjustment: document.getElementById('adjustmentError'),
+                customLength: document.getElementById('customLengthError')
             }
+        };
 
-            if ([baseLength, basePrice, adjustment, customLength].some(v => v < 0)) {
-                showError("数值不能为负数");
-                return;
+        // 输入验证逻辑
+        const validators = {
+            number: (value, field) => {
+                if (isNaN(value) || value === '') {
+                    showError(field, '请输入有效数值');
+                    return false;
+                }
+                if (value < 0) {
+                    showError(field, '数值不能为负数');
+                    return false;
+                }
+                clearError(field);
+                return true;
             }
+        };
 
-            // 计算价格
-            const lengthDifference = customLength - baseLength;
-            const totalPrice = basePrice + (lengthDifference * adjustment);
+        // 实时输入验证
+        Object.keys(elements.errors).forEach(field => {
+            elements[field].addEventListener('input', () => {
+                const value = parseFloat(elements[field].value);
+                validators.number(value, field);
+            });
+        });
 
-            // 显示结果
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = `
-                <h3>计算结果：</h3>
-                <p>基准长度：${baseLength}cm</p>
-                <p>基准价格：${basePrice.toFixed(2)}元</p>
-                <p>定制长度：${customLength}cm（差值：${lengthDifference}cm）</p>
-                <p>调整金额：${lengthDifference}cm × ${adjustment.toFixed(2)}元 = ${(lengthDifference * adjustment).toFixed(2)}元</p>
-                <h4>总价格：${totalPrice.toFixed(2)}元</h4>
+        // 计算逻辑
+        function calculate() {
+            const inputs = {
+                baseLength: parseFloat(elements.baseLength.value),
+                basePrice: parseFloat(elements.basePrice.value),
+                adjustment: parseFloat(elements.adjustment.value),
+                customLength: parseFloat(elements.customLength.value)
+            };
+
+            // 验证所有输入
+            const isValid = Object.keys(inputs).every(field => 
+                validators.number(inputs[field], field)
+            );
+
+            if (!isValid) return;
+
+            // 执行计算
+            const diff = inputs.customLength - inputs.baseLength;
+            const adjustmentAmount = diff * inputs.adjustment;
+            const totalPrice = inputs.basePrice + adjustmentAmount;
+
+            showResult(inputs, diff, adjustmentAmount, totalPrice);
+        }
+
+        // 结果显示
+        function showResult(inputs, diff, adjustment, total) {
+            elements.result.innerHTML = `
+                <div class="calculation-steps">
+                    <p>计算公式：${inputs.basePrice.toFixed(2)} + (${inputs.customLength} - ${inputs.baseLength}) × ${inputs.adjustment.toFixed(2)}</p>
+                    <p>长度差异：${diff.toFixed(1)}cm</p>
+                    <p>调节金额：¥${adjustment.toFixed(2)}</p>
+                </div>
+                <div class="price-highlight">总价格：¥${total.toFixed(2)}</div>
             `;
-            resultDiv.style.backgroundColor = '#e8f5e9';
+            
+            elements.result.style.opacity = 1;
+            elements.result.style.transform = 'translateY(0)';
         }
 
-        function showError(message) {
-            const resultDiv = document.getElementById('result');
-            resultDiv.style.display = 'block';
-            resultDiv.innerHTML = `<strong style="color: red;">错误：${message}</strong>`;
-            resultDiv.style.backgroundColor = '#ffebee';
+        // 错误处理
+        function showError(field, message) {
+            elements.errors[field].textContent = message;
+            elements.errors[field].style.opacity = 1;
+            elements[field].style.borderColor = 'var(--error-color)';
         }
+
+        function clearError(field) {
+            elements.errors[field].style.opacity = 0;
+            elements[field].style.borderColor = '#e0e0e0';
+        }
+
+        // 事件绑定
+        document.getElementById('calculateBtn').addEventListener('click', calculate);
+        
+        // 回车键支持
+        document.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') calculate();
+        });
     </script>
 </body>
 </html>
