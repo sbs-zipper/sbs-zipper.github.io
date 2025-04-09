@@ -1,202 +1,138 @@
-<!-- 针对生产环境的功能扩展实现方案 -->
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>拉链价格计算器</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
 
-<!-- Firebase 初始化 -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-import { getDatabase, ref, get, set, push, update } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-auth.js";
+        .calculator {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
 
-const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "zipperpro-cn.firebaseapp.com",
-  databaseURL: "https://zipperpro-cn-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "zipperpro-cn",
-  storageBucket: "zipperpro-cn.appspot.com",
-  appId: "YOUR_APP_ID"
-};
+        .input-group {
+            margin-bottom: 15px;
+        }
 
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
-const auth = getAuth(app);
+        label {
+            display: block;
+            margin-bottom: 5px;
+            color: #333;
+        }
 
-onAuthStateChanged(auth, (user) => {
-  if (user) {
-    loadProducts();
-    loadOrders(user.uid);
-    document.getElementById('userEmail').textContent = user.email;
-    document.getElementById('logoutBtn').style.display = 'inline-block';
-    document.getElementById('adminPanel').style.display = 'block';
-  } else {
-    console.log('用户未登录');
-    document.getElementById('userEmail').textContent = '';
-    document.getElementById('logoutBtn').style.display = 'none';
-    document.getElementById('adminPanel').style.display = 'none';
-  }
-});
+        input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
 
-async function loadProducts() {
-  const productsRef = ref(db, 'products');
-  const snapshot = await get(productsRef);
-  const products = snapshot.val();
-  const container = document.getElementById('productsContainer');
-  if (!products) {
-    container.innerHTML = '<p>暂无产品</p>';
-    return;
-  }
-  container.innerHTML = Object.entries(products).map(([id, product]) => `
-    <div class="col-md-4 mb-4">
-      <div class="product-card h-100">
-        <img src="${product.images[0]}" class="product-img w-100" alt="${product.name}" loading="lazy">
-        <div class="p-3">
-          <h5>${product.name}</h5>
-          <p class="text-muted small">${product.description}</p>
-          <div class="d-flex justify-content-between">
-            <span class="text-success fw-bold">¥${product.basePrice}</span>
-            <button class="btn btn-sm btn-primary" onclick="orderProduct('${id}')">下单</button>
-          </div>
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #result {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #e8f5e9;
+            border-radius: 4px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="calculator">
+        <h2>拉链价格计算器</h2>
+        
+        <div class="input-group">
+            <label for="baseLength">基准长度 (cm)：</label>
+            <input type="number" id="baseLength" step="0.1" required>
         </div>
-      </div>
+
+        <div class="input-group">
+            <label for="basePrice">基准价格 (元)：</label>
+            <input type="number" id="basePrice" step="0.01" required>
+        </div>
+
+        <div class="input-group">
+            <label for="adjustment">每厘米调整价格 (元)：</label>
+            <input type="number" id="adjustment" step="0.01" required>
+        </div>
+
+        <div class="input-group">
+            <label for="customLength">定制长度 (cm)：</label>
+            <input type="number" id="customLength" step="0.1" required>
+        </div>
+
+        <button onclick="calculatePrice()">立即计算</button>
+
+        <div id="result"></div>
     </div>
-  `).join('');
-}
 
-window.orderProduct = async function(productId) {
-  const user = auth.currentUser;
-  if (!user) return alert('请先登录再下单');
+    <script>
+        function calculatePrice() {
+            // 获取输入元素
+            const baseLength = parseFloat(document.getElementById('baseLength').value);
+            const basePrice = parseFloat(document.getElementById('basePrice').value);
+            const adjustment = parseFloat(document.getElementById('adjustment').value);
+            const customLength = parseFloat(document.getElementById('customLength').value);
+            const resultDiv = document.getElementById('result');
 
-  const orderRef = push(ref(db, 'orders'));
-  await set(orderRef, {
-    userId: user.uid,
-    productId: productId,
-    status: '待处理',
-    timestamp: Date.now()
-  });
+            // 验证输入有效性
+            if ([baseLength, basePrice, adjustment, customLength].some(isNaN)) {
+                showError("请输入有效的数值");
+                return;
+            }
 
-  alert('下单成功！');
-  loadOrders(user.uid);
-};
+            if ([baseLength, basePrice, adjustment, customLength].some(v => v < 0)) {
+                showError("数值不能为负数");
+                return;
+            }
 
-window.submitProduct = async function(e) {
-  e.preventDefault();
-  const data = Object.fromEntries(new FormData(e.target));
-  const newRef = push(ref(db, 'products'));
-  await set(newRef, {
-    name: data.name,
-    description: data.description,
-    basePrice: data.basePrice,
-    images: [data.image],
-    tags: data.tags.split(',')
-  });
-  alert('产品已上传');
-  e.target.reset();
-  loadProducts();
-};
+            // 计算价格
+            const lengthDifference = customLength - baseLength;
+            const totalPrice = basePrice + (lengthDifference * adjustment);
 
-window.register = function(e) {
-  e.preventDefault();
-  const email = document.getElementById('regEmail').value;
-  const password = document.getElementById('regPassword').value;
-  createUserWithEmailAndPassword(auth, email, password)
-    .then(() => alert('注册成功'))
-    .catch(err => alert(err.message));
-};
+            // 显示结果
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `
+                <h3>计算结果：</h3>
+                <p>基准长度：${baseLength}cm</p>
+                <p>基准价格：${basePrice.toFixed(2)}元</p>
+                <p>定制长度：${customLength}cm（差值：${lengthDifference}cm）</p>
+                <p>调整金额：${lengthDifference}cm × ${adjustment.toFixed(2)}元 = ${(lengthDifference * adjustment).toFixed(2)}元</p>
+                <h4>总价格：${totalPrice.toFixed(2)}元</h4>
+            `;
+            resultDiv.style.backgroundColor = '#e8f5e9';
+        }
 
-window.login = function(e) {
-  e.preventDefault();
-  const email = document.getElementById('loginEmail').value;
-  const password = document.getElementById('loginPassword').value;
-  signInWithEmailAndPassword(auth, email, password)
-    .then(() => alert('登录成功'))
-    .catch(err => alert(err.message));
-};
-
-window.logout = function() {
-  signOut(auth).then(() => alert('已退出登录'));
-};
-
-async function loadOrders(userId) {
-  const ordersRef = ref(db, 'orders');
-  const snapshot = await get(ordersRef);
-  const allOrders = snapshot.val() || {};
-  const userOrders = Object.entries(allOrders).filter(([key, order]) => order.userId === userId);
-  const list = document.getElementById('orderList');
-  list.innerHTML = userOrders.length ? userOrders.map(([key, o]) => `
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      产品ID: ${o.productId}，状态: <span>${o.status}</span>
-    </li>`).join('') : '<li class="list-group-item">暂无订单</li>';
-
-  // 加载后台订单管理表格
-  const table = document.getElementById('orderTableBody');
-  if (!table) return;
-  table.innerHTML = Object.entries(allOrders).map(([key, o]) => `
-    <tr>
-      <td>${key}</td>
-      <td>${o.userId}</td>
-      <td>${o.productId}</td>
-      <td>${o.status}</td>
-      <td>
-        <button class="btn btn-sm btn-success" onclick="updateOrderStatus('${key}', '已发货')">发货</button>
-        <button class="btn btn-sm btn-danger" onclick="updateOrderStatus('${key}', '已取消')">取消</button>
-      </td>
-    </tr>`).join('');
-}
-
-window.updateOrderStatus = async function(orderId, status) {
-  await update(ref(db, `orders/${orderId}`), { status });
-  alert(`订单 ${orderId} 状态更新为 ${status}`);
-  const user = auth.currentUser;
-  if (user) loadOrders(user.uid);
-};
-</script>
-
-<!-- 用户注册登录 -->
-<div class="container my-5">
-  <h3>用户注册</h3>
-  <form onsubmit="register(event)" class="mb-4">
-    <input type="email" id="regEmail" placeholder="邮箱" required class="form-control mb-2">
-    <input type="password" id="regPassword" placeholder="密码" required class="form-control mb-2">
-    <button class="btn btn-success">注册</button>
-  </form>
-
-  <h3>用户登录</h3>
-  <form onsubmit="login(event)">
-    <input type="email" id="loginEmail" placeholder="邮箱" required class="form-control mb-2">
-    <input type="password" id="loginPassword" placeholder="密码" required class="form-control mb-2">
-    <button class="btn btn-primary">登录</button>
-  </form>
-  <p>当前登录用户: <span id="userEmail"></span> <button id="logoutBtn" onclick="logout()" class="btn btn-sm btn-outline-danger" style="display:none;">退出</button></p>
-</div>
-
-<!-- 产品上传表单（供应商） -->
-<div class="container my-5">
-  <h3>供应商上传拉链信息</h3>
-  <form onsubmit="submitProduct(event)">
-    <input name="name" placeholder="拉链名称" required class="form-control mb-2">
-    <input name="description" placeholder="描述" required class="form-control mb-2">
-    <input name="basePrice" placeholder="价格" type="number" required class="form-control mb-2">
-    <input name="image" placeholder="图片URL" required class="form-control mb-2">
-    <input name="tags" placeholder="标签 (用英文逗号分隔)" required class="form-control mb-2">
-    <button class="btn btn-warning">上传</button>
-  </form>
-</div>
-
-<!-- 产品展示区 -->
-<div class="container">
-  <h3>产品列表</h3>
-  <div class="row" id="productsContainer"></div>
-</div>
-
-<!-- 用户订单历史 -->
-<div class="container my-5">
-  <h3>我的订单</h3>
-  <ul id="orderList" class="list-group"></ul>
-</div>
-
-<!-- 后台订单管理 -->
-<div class="container my-5" id="adminPanel" style="display:none;">
-  <h3>订单管理后台</h3>
-  <table class="table table-bordered">
-    <thead><tr><th>ID</th><th>用户</th><th>产品</th><th>状态</th><th>操作</th></tr></thead>
-    <tbody id="orderTableBody"></tbody>
-  </table>
-</div>
+        function showError(message) {
+            const resultDiv = document.getElementById('result');
+            resultDiv.style.display = 'block';
+            resultDiv.innerHTML = `<strong style="color: red;">错误：${message}</strong>`;
+            resultDiv.style.backgroundColor = '#ffebee';
+        }
+    </script>
+</body>
+</html>
