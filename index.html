@@ -59,7 +59,7 @@
         const validators = {
             number: (value, field) => {
                 const numericValue = parseFloat(value);
-                if (isNaN(numericValue) {
+                if (isNaN(numericValue)) {
                     showError(field, '请输入有效数值');
                     return false;
                 }
@@ -104,32 +104,4 @@
                 <div class="calculation-steps">
                     <p>计算公式：${inputs.basePrice.toFixed(4)} + 
                     (${inputs.customLength.toFixed(4)} - ${inputs.baseLength.toFixed(4)}) × 
-                    ${inputs.adjustment.toFixed(4)}</p>
-                    <p>长度差异：${diff.toFixed(4)}cm</p>
-                    <p>调节金额：¥${adjustment.toFixed(4)}</p>
-                </div>
-                <div class="price-highlight">总价格：¥${total.toFixed(4)}</div>
-            `;
-            
-            elements.result.style.opacity = 1;
-            elements.result.style.transform = 'translateY(0)';
-        }
-
-        function showError(field, message) {
-            elements.errors[field].textContent = message;
-            elements.errors[field].style.opacity = 1;
-            elements[field].style.borderColor = 'var(--error-color)';
-        }
-
-        function clearError(field) {
-            elements.errors[field].style.opacity = 0;
-            elements[field].style.borderColor = '#e0e0e0';
-        }
-
-        document.getElementById('calculateBtn').addEventListener('click', calculate);
-        document.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') calculate();
-        });
-    </script>
-</body>
-</html>
+                    ${inputs.adjustment.toFixed(4)}</p
