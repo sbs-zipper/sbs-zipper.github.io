@@ -14,7 +14,7 @@
         
         <div class="input-group">
             <label for="baseLength">基准长度 (cm)</label>
-            <input type="number" id="baseLength" step="0.0001" placeholder="请输入基准长度" autofocus>
+            <input type="number" id="baseLength" step="0.1" placeholder="请输入基准长度" autofocus>
             <div class="error-message" id="baseLengthError"></div>
         </div>
 
@@ -32,7 +32,7 @@
 
         <div class="input-group">
             <label for="customLength">定制长度 (cm)</label>
-            <input type="number" id="customLength" step="0.0001" placeholder="请输入定制长度">
+            <input type="number" id="customLength" step="0.1" placeholder="请输入定制长度">
             <div class="error-message" id="customLengthError"></div>
         </div>
 
@@ -43,65 +43,3 @@
 
     <script>
         const elements = {
-            baseLength: document.getElementById('baseLength'),
-            basePrice: document.getElementById('basePrice'),
-            adjustment: document.getElementById('adjustment'),
-            customLength: document.getElementById('customLength'),
-            result: document.getElementById('result'),
-            errors: {
-                baseLength: document.getElementById('baseLengthError'),
-                basePrice: document.getElementById('basePriceError'),
-                adjustment: document.getElementById('adjustmentError'),
-                customLength: document.getElementById('customLengthError')
-            }
-        };
-
-        const validators = {
-            number: (value, field) => {
-                const numericValue = parseFloat(value);
-                if (isNaN(numericValue)) {
-                    showError(field, '请输入有效数值');
-                    return false;
-                }
-                if (numericValue < 0) {
-                    showError(field, '数值不能为负数');
-                    return false;
-                }
-                clearError(field);
-                return true;
-            }
-        };
-
-        Object.keys(elements.errors).forEach(field => {
-            elements[field].addEventListener('input', () => {
-                validators.number(elements[field].value, field);
-            });
-        });
-
-        function calculate() {
-            const inputs = {
-                baseLength: parseFloat(elements.baseLength.value),
-                basePrice: parseFloat(elements.basePrice.value),
-                adjustment: parseFloat(elements.adjustment.value),
-                customLength: parseFloat(elements.customLength.value)
-            };
-
-            const isValid = Object.keys(inputs).every(field => 
-                validators.number(inputs[field], field)
-            );
-
-            if (!isValid) return;
-
-            const diff = inputs.customLength - inputs.baseLength;
-            const adjustmentAmount = diff * inputs.adjustment;
-            const totalPrice = inputs.basePrice + adjustmentAmount;
-
-            showResult(inputs, diff, adjustmentAmount, totalPrice);
-        }
-
-        function showResult(inputs, diff, adjustment, total) {
-            elements.result.innerHTML = `
-                <div class="calculation-steps">
-                    <p>计算公式：${inputs.basePrice.toFixed(4)} + 
-                    (${inputs.customLength.toFixed(4)} - ${inputs.baseLength.toFixed(4)}) × 
-                    ${inputs.adjustment.toFixed(4)}</p
