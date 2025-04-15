@@ -1,305 +1,342 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>智能拉链价格计算器</title>
-    <style>
-        :root {
-            --primary-color: #2d4059;
-            --accent-color: #00b4d8;
-            --error-color: #e63946;
-            --success-bg: #f1faee;
-        }
-
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            max-width: 720px;
-            margin: 2rem auto;
-            padding: 0 20px;
-            background: #f8f9fa;
-        }
-
-        .calculator {
-            background: white;
-            padding: 2rem;
-            border-radius: 16px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.08);
-            transition: transform 0.2s;
-            border: 1px solid #e0e0e0;
-        }
-
-        h2 {
-            color: var(--primary-color);
-            margin-bottom: 1.8rem;
-            padding-bottom: 0.8rem;
-            border-bottom: 3px solid var(--accent-color);
-            font-size: 1.8rem;
-        }
-
-        .input-group {
-            margin-bottom: 1.5rem;
-            position: relative;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 0.6rem;
-            color: var(--primary-color);
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        input {
-            width: 100%;
-            padding: 0.9rem;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            transition: all 0.3s;
-            font-size: 16px;
-            background: #f8f9fa;
-        }
-
-        input:focus {
-            border-color: var(--accent-color);
-            background: white;
-            box-shadow: 0 0 0 4px rgba(0, 180, 216, 0.15);
-        }
-
-        .error-message {
-            color: var(--error-color);
-            font-size: 0.85rem;
-            margin-top: 0.4rem;
-            height: 1.2rem;
-            opacity: 0;
-            transition: opacity 0.3s;
-            font-weight: 500;
-        }
-
-        button {
-            background: var(--accent-color);
-            color: white;
-            padding: 1.1rem 2rem;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 1.05rem;
-            font-weight: 600;
-            transition: 
-                background-color 0.3s,
-                transform 0.2s;
-            margin-top: 0.5rem;
-        }
-
-        button:hover {
-            background: #0096c7;
-            transform: translateY(-2px);
-        }
-
-        button:active {
-            transform: translateY(0);
-        }
-
-        #result {
-            margin-top: 2rem;
-            padding: 1.8rem;
-            background: var(--success-bg);
-            border-radius: 10px;
-            opacity: 0;
-            transform: translateY(10px);
-            transition: 
-                opacity 0.4s,
-                transform 0.4s;
-            border: 2px solid #d8e2dc;
-        }
-
-        .price-highlight {
-            color: #2a9d8f;
-            font-size: 1.8rem;
-            font-weight: 700;
-            margin: 1rem 0;
-            letter-spacing: 0.5px;
-        }
-
-        .calculation-steps {
-            color: #6c757d;
-            line-height: 1.7;
-            margin: 1.2rem 0;
-            font-size: 0.95rem;
-        }
-
-        .calculation-steps p {
-            margin: 0.8rem 0;
-            padding: 0.6rem;
-            background: white;
-            border-radius: 6px;
-            border: 1px solid #eee;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <title>厦门和新拉链产品数据中心</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <style>
+    :root {
+      --primary: #2c7be5;
+      --secondary: #6e84a3;
+      --success: #00ac69;
+      --warning: #f6c343;
+      --border-radius: 8px;
+      --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+    body {
+      background: #f5f5f7;
+      padding: 1rem;
+      font-family: system-ui, sans-serif;
+    }
+    .price { color: var(--success); font-weight: bold; }
+    th.sortable { cursor: pointer; transition: background 0.2s; }
+    th.sortable:hover { background: #e3f2fd; }
+    th.sort-asc::after { content: " ▲"; font-size: 0.8rem; }
+    th.sort-desc::after { content: " ▼"; font-size: 0.8rem; }
+    .table-hover tbody tr { transition: transform 0.2s; }
+    .table-hover tbody tr:hover { transform: translateX(4px); }
+    .sticky-header { position: sticky; top: 0; z-index: 10; }
+    .highlight { background-color: #e8f4ff !important; }
+    #historyList div { padding: 0.5rem; border-bottom: 1px solid #eee; }
+    #historyList div:hover { background: #f8f9fa; }
+  </style>
 </head>
 <body>
-    <div class="calculator">
-        <h2>智能拉链计价器</h2>
-        
-        <div class="input-group">
-            <label for="baseLength">基准长度 (cm)</label>
-            <input type="number" id="baseLength" step="0.0001" placeholder="例如：10.0000" autofocus>
-            <div class="error-message" id="baseLengthError"></div>
+<div class="container bg-white p-4 rounded-3 shadow">
+  <header class="mb-4">
+    <h1 class="text-primary mb-3">厦门和新拉链产品数据中心</h1>
+    <div class="input-group">
+      <input type="text" id="searchInput" class="form-control form-control-lg" 
+             placeholder="搜索产品（支持编号、辅料品名、规格、备注）">
+      <button class="btn btn-outline-secondary" type="button" id="clearSearch">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+  </header>
+
+  <div class="table-responsive mb-4">
+    <table class="table table-hover table-striped align-middle">
+      <thead class="table-primary sticky-header">
+        <tr>
+          <th data-sort="code" class="sortable">编号</th>
+          <th data-sort="name" class="sortable">辅料品名</th>
+          <th data-sort="specification" class="sortable">规格</th>
+          <th data-sort="price" class="sortable">报价（元）</th>
+          <th data-sort="cmPrice" class="sortable">每公分加减</th>
+          <th data-sort="remark" class="sortable">备注</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+    <div id="noResults" class="text-center text-muted py-4" style="display:none;">
+      没有找到匹配的产品
+    </div>
+  </div>
+
+  <section class="bg-light rounded-3 p-4 shadow-sm">
+    <h2 class="text-primary mb-4">价格计算器 <i class="bi bi-calculator"></i></h2>
+    <div class="row g-3 mb-4">
+      <div class="col-md-6">
+        <div class="alert alert-info mb-0">
+          <div class="d-flex justify-content-between">
+            <div>当前产品：</div>
+            <strong id="currentProduct">未选择</strong>
+          </div>
         </div>
-
-        <div class="input-group">
-            <label for="basePrice">基准价格 (¥)</label>
-            <input type="number" id="basePrice" step="0.0001" placeholder="例如：5.0000">
-            <div class="error-message" id="basePriceError"></div>
+      </div>
+      <div class="col-md-3">
+        <div class="alert alert-light mb-0">
+          基准价格：<span id="basePrice" class="price">¥0.00</span>
         </div>
-
-        <div class="input-group">
-            <label for="adjustment">长度调节单价 (¥/cm)</label>
-            <input type="number" id="adjustment" step="0.0001" placeholder="例如：0.5000">
-            <div class="error-message" id="adjustmentError"></div>
+      </div>
+      <div class="col-md-3">
+        <div class="alert alert-light mb-0">
+          每厘米价：<span id="cmPrice">¥0.0000/cm</span>
         </div>
-
-        <div class="input-group">
-            <label for="customLength">定制长度 (cm)</label>
-            <input type="number" id="customLength" step="0.0001" placeholder="例如：12.5000">
-            <div class="error-message" id="customLengthError"></div>
-        </div>
-
-        <button id="calculateBtn">立即计算</button>
-
-        <div id="result"></div>
+      </div>
     </div>
 
-    <script>
-        // DOM元素缓存
-        const elements = {
-            baseLength: document.getElementById('baseLength'),
-            basePrice: document.getElementById('basePrice'),
-            adjustment: document.getElementById('adjustment'),
-            customLength: document.getElementById('customLength'),
-            result: document.getElementById('result'),
-            errors: {
-                baseLength: document.getElementById('baseLengthError'),
-                basePrice: document.getElementById('basePriceError'),
-                adjustment: document.getElementById('adjustmentError'),
-                customLength: document.getElementById('customLengthError')
-            }
-        };
+    <div class="row g-3">
+      <div class="col-md-8">
+        <input type="range" class="form-range" id="lengthRange" min="5" max="300" step="1">
+        <div class="input-group">
+          <span class="input-group-text">定制长度</span>
+          <input type="number" id="customLength" class="form-control form-control-lg" 
+                 min="5" max="300" placeholder="5-300厘米">
+          <span class="input-group-text">厘米</span>
+        </div>
+      </div>
+      <div class="col-md-4 d-grid">
+        <button id="calculateBtn" class="btn btn-primary btn-lg h-100">
+          <i class="bi bi-cash-coin"></i> 计算总价
+        </button>
+      </div>
+    </div>
 
-        // 数值格式化函数
-        const formatter = {
-            format: (num) => {
-                const parts = num.toFixed(4).split('.');
-                parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-                return parts.join('.');
-            }
-        };
+    <div class="result mt-4" id="result" style="display: none;">
+      <div class="alert alert-success">
+        <h5 class="alert-heading">总价: <span id="totalPrice" class="price">¥0.0000</span></h5>
+        <div id="calculationDetail" class="small mb-0"></div>
+      </div>
+    </div>
 
-        // 验证逻辑
-        const validators = {
-            number: (value, field) => {
-                const numericValue = parseFloat(value);
-                
-                if (value.trim() === '') {
-                    showError(field, '此项为必填项');
-                    return false;
-                }
-                
-                if (isNaN(numericValue)) {
-                    showError(field, '请输入有效数值');
-                    return false;
-                }
-                
-                if (numericValue < 0) {
-                    showError(field, '数值不能为负数');
-                    return false;
-                }
-                
-                clearError(field);
-                return true;
-            }
-        };
+    <div class="history mt-4" id="history" style="display:none;">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="text-primary mb-0">计算历史 <i class="bi bi-clock-history"></i></h5>
+        <button id="clearHistory" class="btn btn-sm btn-outline-danger">清空历史</button>
+      </div>
+      <div id="historyList" class="bg-white rounded-2 p-2 shadow-sm"></div>
+    </div>
+  </section>
+</div>
 
-        // 实时输入验证
-        Object.keys(elements.errors).forEach(field => {
-            elements[field].addEventListener('input', () => {
-                validators.number(elements[field].value, field);
-            });
-        });
+<script>
+  // 配置项
+  const CONFIG = {
+    priceUnit: '¥',
+    baseLength: 30,
+    storageKey: 'calculationHistory'
+  };
 
-        // 核心计算逻辑
-        function calculate() {
-            // 获取原始输入值
-            const rawValues = {
-                baseLength: elements.baseLength.value,
-                basePrice: elements.basePrice.value,
-                adjustment: elements.adjustment.value,
-                customLength: elements.customLength.value
-            };
+  // 产品数据
+  const products = [
+    { code: 'SBS-0010', name: 'D5#开口箭形牙（M-H)钩型上止', specification: '30', price: 2.224, cmPrice: 0.027, remark: '不含拉头' },
+    { code: 'SBS-0051', name: 'D5#开口仿金属M-H牙指定牙钩型上止', specification: '30', price: 2.216, cmPrice: 0.027, remark: '不含拉头' },
+    { code: 'SBS-0050', name: 'D5#闭口仿金属M-H牙', specification: '30', price: 2.1245, cmPrice: 0.027, remark: '不含拉头' },
+    { code: 'SBS-0040', name: 'D5#开口仿金属M-H牙钩型上止', specification: '30', price: 1.9125, cmPrice: 0.027, remark: '不含拉头' },
+    { code: 'SBS-0061', name: 'D5#双开口仿金属M-H牙指定牙钩型上止', specification: '30', price: 2.44, cmPrice: 0.027, remark: '不含拉头' },
+    { code: 'SBS-0060', name: 'D5#双开口仿金属M-H牙钩型上止', specification: '30', price: 2.12, cmPrice: 0.027, remark: '不含拉头' },
+    { code: 'SBS-0080', name: 'D3#互拼开口钩型上止+旋转头', specification: '30', price: 1.505, cmPrice: 0.011, remark: '不含拉头' },
+    { code: 'SBS-0020', name: 'D3#互拼开口左插钩型上止', specification: '30', price: 1.505, cmPrice: 0.011, remark: '不含拉头' },
+    { code: 'SBS-0030', name: 'N3#AD注塑背拉开口直边上止', specification: '30', price: 1.274, cmPrice: 0.006, remark: '不含拉头' },
+    { code: 'SBS-101', name: '5#多凹圆点尖尾烤漆', specification: '', price: 0.65, cmPrice: 0, remark: '' },
+    { code: 'SBS-102', name: '旋转头葫芦片冷喷', specification: '', price: 0.6, cmPrice: 0, remark: '' },
+    { code: 'SBS-103', name: '无字葫芦片（烤漆）', specification: '', price: 0.3, cmPrice: 0, remark: '' }
+  ];
 
-            // 验证所有输入
-            const isValid = Object.keys(rawValues).every(field => 
-                validators.number(rawValues[field], field)
-            );
+  let state = {
+    selectedProduct: null,
+    filteredProducts: [...products],
+    sortConfig: { key: null, direction: 'asc' },
+    calculationHistory: JSON.parse(localStorage.getItem(CONFIG.storageKey)) || []
+  };
 
-            if (!isValid) {
-                elements.result.style.opacity = 0;
-                return;
-            }
+  // 初始化
+  function init() {
+    renderTable();
+    loadHistory();
+    addEventListeners();
+    if (state.filteredProducts.length > 0) selectProduct(state.filteredProducts[0]);
+  }
 
-            // 转换为数值
-            const inputs = {
-                baseLength: parseFloat(rawValues.baseLength),
-                basePrice: parseFloat(rawValues.basePrice),
-                adjustment: parseFloat(rawValues.adjustment),
-                customLength: parseFloat(rawValues.customLength)
-            };
+  // 事件监听
+  function addEventListeners() {
+    document.getElementById('searchInput').addEventListener('input', handleSearch);
+    document.getElementById('clearSearch').addEventListener('click', clearSearch);
+    document.querySelectorAll('th[data-sort]').forEach(th => {
+      th.addEventListener('click', () => handleSort(th.dataset.sort));
+    });
+    document.getElementById('calculateBtn').addEventListener('click', calculatePrice);
+    document.getElementById('lengthRange').addEventListener('input', syncRangeWithInput);
+    document.getElementById('customLength').addEventListener('input', syncInputWithRange);
+    document.getElementById('clearHistory').addEventListener('click', clearHistory);
+  }
 
-            // 执行计算
-            const diff = inputs.customLength - inputs.baseLength;
-            const adjustmentAmount = diff * inputs.adjustment;
-            const totalPrice = inputs.basePrice + adjustmentAmount;
+  // 表格渲染
+  function renderTable() {
+    const tbody = document.getElementById('tableBody');
+    const noResults = document.getElementById('noResults');
+    
+    tbody.innerHTML = state.filteredProducts.map(product => `
+      <tr class="${state.selectedProduct?.code === product.code ? 'highlight' : ''}">
+        <td>${product.code}</td>
+        <td>${product.name}</td>
+        <td>${product.specification}</td>
+        <td class="price">${formatPrice(product.price)}</td>
+        <td>${formatPrice(product.cmPrice, 4)}/cm</td>
+        <td>${product.remark}</td>
+      </tr>
+    `).join('');
 
-            showResult(inputs, diff, adjustmentAmount, totalPrice);
-        }
+    noResults.style.display = state.filteredProducts.length ? 'none' : 'block';
+    
+    // 添加行点击事件
+    tbody.querySelectorAll('tr').forEach((tr, index) => {
+      tr.addEventListener('click', () => selectProduct(state.filteredProducts[index]));
+    });
+  }
 
-        // 显示结果
-        function showResult(inputs, diff, adjustment, total) {
-            elements.result.innerHTML = `
-                <div class="calculation-steps">
-                    <p>计算公式：${formatter.format(inputs.basePrice)} + 
-                    (${formatter.format(inputs.customLength)} - ${formatter.format(inputs.baseLength)}) × 
-                    ${formatter.format(inputs.adjustment)}</p>
-                    <p>长度差异：${formatter.format(diff)} cm</p>
-                    <p>调节金额：¥${formatter.format(adjustment)}</p>
-                </div>
-                <div class="price-highlight">总价格：¥${formatter.format(total)}</div>
-            `;
-            
-            elements.result.style.opacity = 1;
-            elements.result.style.transform = 'translateY(0)';
-        }
+  // 价格格式化
+  function formatPrice(value, decimals = 2) {
+    return `${CONFIG.priceUnit}${value.toFixed(decimals)}`;
+  }
 
-        // 错误处理
-        function showError(field, message) {
-            elements.errors[field].textContent = message;
-            elements.errors[field].style.opacity = 1;
-            elements[field].style.borderColor = 'var(--error-color)';
-        }
+  // 排序处理
+  function handleSort(key) {
+    let direction = 'asc';
+    if (state.sortConfig.key === key && state.sortConfig.direction === 'asc') {
+      direction = 'desc';
+    }
+    state.sortConfig = { key, direction };
+    
+    state.filteredProducts.sort((a, b) => {
+      if (a[key] < b[key]) return direction === 'asc' ? -1 : 1;
+      if (a[key] > b[key]) return direction === 'asc' ? 1 : -1;
+      return 0;
+    });
 
-        function clearError(field) {
-            elements.errors[field].style.opacity = 0;
-            elements[field].style.borderColor = '#e0e0e0';
-        }
+    updateSortIndicators();
+    renderTable();
+  }
 
-        // 事件绑定
-        document.getElementById('calculateBtn').addEventListener('click', calculate);
-        
-        // 回车键支持
-        document.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') calculate();
-        });
-    </script>
+  // 更新排序指示器
+  function updateSortIndicators() {
+    document.querySelectorAll('th').forEach(th => {
+      th.classList.remove('sort-asc', 'sort-desc');
+      if (th.dataset.sort === state.sortConfig.key) {
+        th.classList.add(`sort-${state.sortConfig.direction}`);
+      }
+    });
+  }
+
+  // 搜索处理
+  function handleSearch() {
+    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+    state.filteredProducts = products.filter(product => {
+      return (
+        product.code.toLowerCase().includes(searchTerm) ||
+        product.name.toLowerCase().includes(searchTerm) ||
+        product.specification.toLowerCase().includes(searchTerm) ||
+        product.remark.toLowerCase().includes(searchTerm)
+      );
+    });
+    renderTable();
+    if (state.filteredProducts.length > 0) selectProduct(state.filteredProducts[0]);
+  }
+
+  // 清除搜索
+  function clearSearch() {
+    document.getElementById('searchInput').value = '';
+    state.filteredProducts = [...products];
+    renderTable();
+    if (state.filteredProducts.length > 0) selectProduct(state.filteredProducts[0]);
+  }
+
+  // 选择产品
+  function selectProduct(product) {
+    state.selectedProduct = product;
+    document.getElementById('currentProduct').textContent = product.name;
+    document.getElementById('basePrice').textContent = formatPrice(product.price);
+    document.getElementById('cmPrice').textContent = `${formatPrice(product.cmPrice, 4)}/cm`;
+    renderTable();
+  }
+
+  // 同步范围输入和数字输入
+  function syncRangeWithInput() {
+    const rangeValue = document.getElementById('lengthRange').value;
+    document.getElementById('customLength').value = rangeValue;
+  }
+
+  function syncInputWithRange() {
+    const inputValue = document.getElementById('customLength').value;
+    document.getElementById('lengthRange').value = inputValue;
+  }
+
+  // 计算价格
+  function calculatePrice() {
+    const selectedProduct = state.selectedProduct;
+    if (!selectedProduct) return;
+
+    const customLength = parseInt(document.getElementById('customLength').value);
+    if (isNaN(customLength) || customLength < 5 || customLength > 300) {
+      alert('请输入5到300之间的有效长度');
+      return;
+    }
+
+    const basePrice = selectedProduct.price;
+    const cmPrice = selectedProduct.cmPrice;
+    const totalPrice = basePrice + (customLength - CONFIG.baseLength) * cmPrice;
+
+    const resultDiv = document.getElementById('result');
+    resultDiv.style.display = 'block';
+    document.getElementById('totalPrice').textContent = formatPrice(totalPrice, 4);
+    document.getElementById('calculationDetail').textContent = `基准价格: ${formatPrice(basePrice)} + 每厘米差价: ${formatPrice(cmPrice)} x (${customLength} - ${CONFIG.baseLength})cm`;
+
+    const historyItem = {
+      productName: selectedProduct.name,
+      customLength,
+      totalPrice
+    };
+    state.calculationHistory.push(historyItem);
+    saveHistory();
+    loadHistory();
+  }
+
+  // 加载历史记录
+  function loadHistory() {
+    const historyList = document.getElementById('historyList');
+    const historyDiv = document.getElementById('history');
+    historyList.innerHTML = '';
+
+    if (state.calculationHistory.length === 0) {
+      historyDiv.style.display = 'none';
+      return;
+    }
+
+    historyDiv.style.display = 'block';
+    state.calculationHistory.forEach((item, index) => {
+      const div = document.createElement('div');
+      div.textContent = `${item.productName} - 长度: ${item.customLength}cm - 总价: ${formatPrice(item.totalPrice, 4)}`;
+      historyList.appendChild(div);
+    });
+  }
+
+  // 清空历史记录
+  function clearHistory() {
+    state.calculationHistory = [];
+    saveHistory();
+    loadHistory();
+  }
+
+  // 持久化历史记录
+  function saveHistory() {
+    localStorage.setItem(CONFIG.storageKey, JSON.stringify(state.calculationHistory));
+  }
+
+  // 初始化执行
+  init();
+</script>
 </body>
 </html>
+    
