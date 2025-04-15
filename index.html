@@ -77,7 +77,7 @@
       </div>
       <div class="col-md-3">
         <div class="alert alert-light mb-0">
-          基准价格：<span id="basePrice" class="price">¥0.00</span>
+          基准价格：<span id="basePrice" class="price">¥0.000</span>
         </div>
       </div>
       <div class="col-md-3">
@@ -183,7 +183,7 @@
         <td>${product.code}</td>
         <td>${product.name}</td>
         <td>${product.specification}</td>
-        <td class="price">${formatPrice(product.price)}</td>
+        <td class="price">${formatPrice(product.price, 3)}</td>
         <td>${formatPrice(product.cmPrice, 4)}/cm</td>
         <td>${product.remark}</td>
       </tr>
@@ -257,7 +257,7 @@
   function selectProduct(product) {
     state.selectedProduct = product;
     document.getElementById('currentProduct').textContent = product.name;
-    document.getElementById('basePrice').textContent = formatPrice(product.price);
+    document.getElementById('basePrice').textContent = formatPrice(product.price, 3);
     document.getElementById('cmPrice').textContent = `${formatPrice(product.cmPrice, 4)}/cm`;
     renderTable();
   }
@@ -291,7 +291,7 @@
     const resultDiv = document.getElementById('result');
     resultDiv.style.display = 'block';
     document.getElementById('totalPrice').textContent = formatPrice(totalPrice, 4);
-    document.getElementById('calculationDetail').textContent = `基准价格: ${formatPrice(basePrice)} + 每厘米差价: ${formatPrice(cmPrice)} x (${customLength} - ${CONFIG.baseLength})cm`;
+    document.getElementById('calculationDetail').textContent = `基准价格: ${formatPrice(basePrice, 3)} + 每厘米差价: ${formatPrice(cmPrice, 4)} x (${customLength} - ${CONFIG.baseLength})cm`;
 
     const historyItem = {
       productName: selectedProduct.name,
