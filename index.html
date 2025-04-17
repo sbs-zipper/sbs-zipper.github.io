@@ -23,13 +23,18 @@
 
     .layout {
       display: flex;
-      min-height: 100vh;
     }
 
     .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
       width: 240px;
       padding: 40px 24px;
       border-right: 1px solid #333;
+      background: #000;
+      overflow-y: auto;
     }
 
     .sidebar h1 {
@@ -47,10 +52,7 @@
       transition: color 0.3s ease;
     }
 
-    .sidebar nav a.active {
-      color: #ff0;
-    }
-
+    .sidebar nav a.active,
     .sidebar nav a:hover {
       color: #ff0;
     }
@@ -62,8 +64,9 @@
     }
 
     .main {
-      flex: 1;
+      margin-left: 240px;
       padding: 64px;
+      flex: 1;
     }
 
     .main h1 {
@@ -104,11 +107,8 @@
     }
 
     @media (max-width: 768px) {
-      .layout {
-        flex-direction: column;
-      }
-
       .sidebar {
+        position: static;
         width: 100%;
         border-right: none;
         border-bottom: 1px solid #333;
@@ -116,6 +116,7 @@
       }
 
       .main {
+        margin-left: 0;
         padding: 32px;
       }
     }
