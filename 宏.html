@@ -1,0 +1,133 @@
+1、赛选前三列合并第四列数据进行汇总
+Sub FilterAndSumToNewSheet()
+Dim ws As Worksheet
+Dim newWs As Worksheet
+Dim lastRow As Long
+Dim i As Long
+Dim dict As Object
+Set dict = CreateObject("Scripting.Dictionary")
+' Set the worksheet to the active sheet
+Set ws = ActiveSheet
+
+' Find the last row with data in column A
+lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+
+' Loop through each row and populate the dictionary
+For i = 2 To lastRow ' Assuming the first row is headers
+    Dim key As String
+    key = ws.Cells(i, 1).Value & "|" & ws.Cells(i, 2).Value & "|" & ws.Cells(i, 3).Value ' Combine A, B, and C as key
+
+    If Not dict.Exists(key) Then
+        dict.Add key, ws.Cells(i, 4).Value ' Add new key with quantity from column D
+    Else
+        dict(key) = dict(key) + ws.Cells(i, 4).Value ' Sum the quantities from column D
+    End If
+Next i
+
+' Create a new worksheet for the results
+Set newWs = ThisWorkbook.Worksheets.Add
+newWs.Name = "汇总数据" ' Name the new worksheet "汇总数据"
+
+' Write headers in the new worksheet
+newWs.Cells(1, 1).Value = "拉链编号"
+newWs.Cells(1, 2).Value = "颜色"
+newWs.Cells(1, 3).Value = "尺寸"
+newWs.Cells(1, 4).Value = "数量"
+
+' Write the results back to the new worksheet
+Dim rowIndex As Long
+rowIndex = 2
+Dim item As Variant
+For Each item In dict.Keys
+    Dim parts() As String
+    parts = Split(item, "|")
+    newWs.Cells(rowIndex, 1).Value = parts(0) ' 拉链编号
+    newWs.Cells(rowIndex, 2).Value = parts(1) ' 颜色
+    newWs.Cells(rowIndex, 3).Value = parts(2) ' 尺寸
+    newWs.Cells(rowIndex, 4).Value = dict(item) ' Summed quantity
+    rowIndex = rowIndex + 1
+Next item
+
+' Optional: Autofit columns for better visibility
+newWs.Columns("A:D").AutoFit
+End Sub
+
+2、匹配表1和表2的前三列，并把第四列数据填到表1
+Sub MatchDataBetweenSheets()
+    Dim ws1 As Worksheet, ws2 As Worksheet
+    Dim lastRow1 As Long, lastRow2 As Long
+    Dim i As Long, j As Long
+    Dim str1Col1 As String, str1Col2 As String, str1Col3 As String
+    Dim str2Col1 As String, str2Col2 As String, str2Col3 As String
+    
+    ' 设置表 1 和表 2
+    Set ws1 = ThisWorkbook.Sheets("表1")
+    Set ws2 = ThisWorkbook.Sheets("表2")
+    
+    ' 获取表 1 和表 2 的最后一行
+    lastRow1 = ws1.Cells(ws1.Rows.Count, 1).End(xlUp).Row
+    lastRow2 = ws2.Cells(ws2.Rows.Count, 1).End(xlUp).Row
+    
+    ' 遍历表 1 的每一行
+    For i = 2 To lastRow1
+        ' 提取表 1 当前行前三列的数字和字母
+        str1Col1 = ExtractAlphanumeric(ws1.Cells(i, 1).Value)
+        str1Col2 = ExtractAlphanumeric(ws1.Cells(i, 2).Value)
+        str1Col3 = ExtractAlphanumeric(ws1.Cells(i, 3).Value)
+        
+        ' 遍历表 2 的每一行
+        For j = 2 To lastRow2
+            ' 提取表 2 当前行前三列的数字和字母
+            str2Col1 = ExtractAlphanumeric(ws2.Cells(j, 1).Value)
+            str2Col2 = ExtractAlphanumeric(ws2.Cells(j, 2).Value)
+            str2Col3 = ExtractAlphanumeric(ws2.Cells(j, 3).Value)
+            
+            ' 检查前三列提取后的数字和字母是否匹配
+            If str1Col1 = str2Col1 And str1Col2 = str2Col2 And str1Col3 = str2Col3 Then
+                ' 如果匹配，将表 2 的第四列和第五列数据复制到表 1
+                ws1.Cells(i, 4).Value = ws2.Cells(j, 4).Value
+                ws1.Cells(i, 5).Value = ws2.Cells(j, 5).Value
+                Exit For ' 找到匹配后退出内层循环
+            End If
+        Next j
+    Next i
+End Sub
+
+Function ExtractAlphanumeric(ByVal inputString As String) As String
+    Dim i As Long
+    Dim result As String
+    For i = 1 To Len(inputString)
+        Dim char As String
+        char = Mid(inputString, i, 1)
+        If (char Like "[A-Za-z0-9]") Then
+            result = result & char
+        End If
+    Next i
+    ExtractAlphanumeric = result
+End Function
+    
+3、把表格中的合并单元格取消合并
+Sub ProcessMergedCells()
+    Dim cell As Range
+    Dim mergedRange As Range
+    Dim mergedValue As String
+    
+    ' 遍历当前活动工作表中的所有单元格
+    For Each cell In ActiveSheet.UsedRange
+        If cell.MergeCells Then
+            ' 获取合并单元格区域
+            Set mergedRange = cell.MergeArea
+            ' 获取合并单元格的值
+            mergedValue = Trim(Replace(mergedRange.Cells(1, 1).Value, "  ", " "))
+            ' 取消合并单元格
+            mergedRange.MergeCells = False
+            ' 将处理后的值填充到取消合并后的所有单元格
+            For Each c In mergedRange
+                c.Value = mergedValue
+            Next c
+        Else
+            ' 处理非合并单元格，去除多余空格
+            cell.Value = Trim(Replace(cell.Value, "  ", " "))
+        End If
+    Next cell
+End Sub
