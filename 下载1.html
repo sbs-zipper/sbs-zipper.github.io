@@ -1,0 +1,126 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>拉链价格计算器</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/gh/atelier-anchor/smiley-sans/SmileySans-Oblique.subset.css" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #000;
+      color: #fff;
+      font-family: 'Smiley Sans', sans-serif;
+      padding: 40px;
+    }
+    h1 { font-size: 36px; margin-bottom: 32px; }
+    label {
+      display: block;
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    input[type="number"], input[type="range"] {
+      width: 100%;
+      max-width: 400px;
+      padding: 10px;
+      background: #111;
+      border: 1px solid #555;
+      color: #fff;
+      font-size: 16px;
+    }
+    .slider-value {
+      margin-top: 8px;
+      font-size: 16px;
+    }
+    button {
+      margin-top: 32px;
+      padding: 12px 24px;
+      font-size: 18px;
+      background: #fff;
+      color: #000;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #ff0;
+    }
+    .result {
+      margin-top: 32px;
+      font-size: 18px;
+      color: #0f0;
+      white-space: pre-wrap;
+    }
+  </style>
+</head>
+<body>
+  <h1>定制拉链价格计算器</h1>
+
+  <label>基准长度（cm）：</label>
+  <input type="number" id="baseLength" placeholder="如 60" value="60" />
+
+  <label>基准价格（元/条）：</label>
+  <input type="number" id="basePrice" step="0.01" placeholder="如 3.6" value="3.6" />
+
+  <label>每厘米加减价（元）：</label>
+  <input type="number" id="adjustPrice" step="0.01" placeholder="如 0.05" value="0.05" />
+
+  <label>拉头价格（元）：</label>
+  <input type="number" id="sliderPrice" step="0.01" placeholder="如 0.5" value="0.5" />
+
+  <label>选择拉链长度（10~100cm）：</label>
+  <input type="range" id="zipLength" min="10" max="100" value="60" />
+  <div class="slider-value">当前长度：<span id="lengthDisplay">60</span> cm</div>
+
+  <label>数量（条）：</label>
+  <input type="number" id="quantity" value="1000" />
+
+  <button onclick="calculate()">计算总价</button>
+
+  <div class="result" id="result">总价：-</div>
+
+  <script>
+    const zipLengthSlider = document.getElementById('zipLength');
+    const lengthDisplay = document.getElementById('lengthDisplay');
+
+    zipLengthSlider.addEventListener('input', () => {
+      lengthDisplay.textContent = zipLengthSlider.value;
+    });
+
+    function calculate() {
+      const baseLength = parseFloat(document.getElementById('baseLength').value);
+      const basePrice = parseFloat(document.getElementById('basePrice').value);
+      const adjustPrice = parseFloat(document.getElementById('adjustPrice').value);
+      const sliderPrice = parseFloat(document.getElementById('sliderPrice').value);
+      const zipLength = parseInt(zipLengthSlider.value);
+      const quantity = parseInt(document.getElementById('quantity').value);
+
+      if (
+        isNaN(baseLength) || isNaN(basePrice) ||
+        isNaN(adjustPrice) || isNaN(sliderPrice) ||
+        isNaN(zipLength) || isNaN(quantity)
+      ) {
+        document.getElementById('result').innerText = '请输入完整信息';
+        return;
+      }
+
+      const diff = zipLength - baseLength;
+      const adjust = diff * adjustPrice;
+      const unitPrice = basePrice + adjust + sliderPrice;
+      const total = unitPrice * quantity;
+
+      const formula = `
+每条总价 = 基准价 + (当前长度 - 基准长度) × 加减价 + 拉头价
+          = ${basePrice} + (${zipLength} - ${baseLength}) × ${adjustPrice} + ${sliderPrice}
+          = ${basePrice} + (${diff} × ${adjustPrice}) + ${sliderPrice}
+          = ${basePrice + adjust} + ${sliderPrice}
+          = ${unitPrice.toFixed(2)} 元/条
+
+总价 = 每条总价 × 数量 = ${unitPrice.toFixed(2)} × ${quantity} = ¥ ${total.toFixed(2)}
+`;
+
+      document.getElementById('result').innerText = formula;
+    }
+  </script>
+</body>
+</html>
