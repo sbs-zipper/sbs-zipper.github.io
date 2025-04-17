@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
+    <title>VBA 宏代码展示</title>
+    <style>
+        pre {
+            background-color: #f4f4f9;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 font-sans">
+    <header class="bg-blue-600 text-white py-4">
+        <div class="container mx-auto px-4">
+            <h1 class="text-3xl font-bold">VBA 宏代码展示</h1>
+        </div>
+    </header>
+    <main class="container mx-auto px-4 py-8">
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold mb-4">匹配前三列数据的 VBA 宏</h2>
+            <p class="text-gray-700 mb-4">此宏用于匹配表 1 和表 2 的前三列数据，当匹配成功时，将表 2 的第四列和第五列数据填充到表 1 中。</p>
+            <pre><code class="language-vba">
+Sub MatchDataBetweenSheets()
+    Dim ws1 As Worksheet, ws2 As Worksheet
+    Dim lastRow1 As Long, lastRow2 As Long
+    Dim i As Long, j As Long
+    Dim str1Col1 As String, str1Col2 As String, str1Col3 As String
+    Dim str2Col1 As String, str2Col2 As String, str2Col3 As String
+    
+    ' 设置表 1 和表 2
+    Set ws1 = ThisWorkbook.Sheets("表1")
+    Set ws2 = ThisWorkbook.Sheets("表2")
+    
+    ' 获取表 1 和表 2 的最后一行
+    lastRow1 = ws1.Cells(ws1.Rows.Count, 1).End(xlUp).Row
+    lastRow2 = ws2.Cells(ws2.Rows.Count, 1).End(xlUp).Row
+    
+    ' 遍历表 1 的每一行
+    For i = 2 To lastRow1
+        ' 提取表 1 当前行前三列的数字和字母
+        str1Col1 = ExtractAlphanumeric(ws1.Cells(i, 1).Value)
+        str1Col2 = ExtractAlphanumeric(ws1.Cells(i, 2).Value)
+        str1Col3 = ExtractAlphanumeric(ws1.Cells(i, 3).Value)
+        
+        ' 遍历表 2 的每一行
+        For j = 2 To lastRow2
+            ' 提取表 2 当前行前三列的数字和字母
+            str2Col1 = ExtractAlphanumeric(ws2.Cells(j, 1).Value)
+            str2Col2 = ExtractAlphanumeric(ws2.Cells(j, 2).Value)
+            str2Col3 = ExtractAlphanumeric(ws2.Cells(j, 3).Value)
+            
+            ' 检查前三列提取后的数字和字母是否匹配
+            If str1Col1 = str2Col1 And str1Col2 = str2Col2 And str1Col3 = str2Col3 Then
+                ' 如果匹配，将表 2 的第四列和第五列数据复制到表 1
+                ws1.Cells(i, 4).Value = ws2.Cells(j, 4).Value
+                ws1.Cells(i, 5).Value = ws2.Cells(j, 5).Value
+                Exit For ' 找到匹配后退出内层循环
+            End If
+        Next j
+    Next i
+End Sub
+
+Function ExtractAlphanumeric(ByVal inputString As String) As String
+    Dim i As Long
+    Dim result As String
+    For i = 1 To Len(inputString)
+        Dim char As String
+        char = Mid(inputString, i, 1)
+        If (char Like "[A-Za-z0-9]") Then
+            result = result & char
+        End If
+    Next i
+    ExtractAlphanumeric = result
+End Function
+            </code></pre>
+        </div>
+    </main>
+    <footer class="bg-gray-800 text-white py-4">
+        <div class="container mx-auto px-4 text-center">
+            <p>&copy; 2025 VBA 宏代码展示</p>
+        </div>
+    </footer>
+</body>
+
+</html>    
