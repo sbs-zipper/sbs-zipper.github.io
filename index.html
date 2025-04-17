@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh">
+
 <head>
   <meta charset="UTF-8">
   <title>SBS拉链 - 专注品质的拉链制造商</title>
@@ -13,7 +14,8 @@
       box-sizing: border-box;
     }
 
-    html, body {
+    html,
+    body {
       background: #000;
       color: #fff;
       font-family: 'Smiley Sans', sans-serif;
@@ -122,13 +124,14 @@
     }
   </style>
 </head>
+
 <body>
   <div class="layout">
     <div class="sidebar">
       <h1>SBS ZIPPER</h1>
       <nav>
-        <a class="active" href="/products">products</a>
-        <a href="/calculator">Price calculator</a>
+        <a class="active" href="#" data-target="products">products</a>
+        <a href="#" data-target="calculator">Price calculator</a>
       </nav>
       <div class="contact">
         福建浔兴拉链科技股份有限公司<br>
@@ -137,7 +140,7 @@
         地址：福建泉州晋江深沪浔兴拉链老厂
       </div>
     </div>
-    <div class="main">
+    <div class="main" id="main-content">
       <h1>Zipper Design</h1>
       <p><strong>D:</strong> SBS团队</p>
 
@@ -146,8 +149,34 @@
 
       <p>我们专注于各类高品质拉链的研发与制造，融合技术与艺术，为功能性与美学提供平衡方案。</p>
       <p>We design and develop functional, stylish zippers that balance precision engineering and visual appeal.</p>
-
     </div>
   </div>
+  <script>
+    document.querySelectorAll('.sidebar nav a').forEach(link => {
+      link.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = this.dataset.target;
+        // 移除所有链接的 active 类
+        document.querySelectorAll('.sidebar nav a').forEach(navLink => {
+          navLink.classList.remove('active');
+        });
+        // 给当前点击的链接添加 active 类
+        this.classList.add('active');
+        // 这里可以根据 target 加载不同的内容
+        if (target === 'products') {
+          document.getElementById('main-content').innerHTML = `
+            <h1>Products</h1>
+            <p>这里展示产品信息。</p>
+          `;
+        } else if (target === 'calculator') {
+          document.getElementById('main-content').innerHTML = `
+            <h1>Price calculator</h1>
+            <p>这里是价格计算器。</p>
+          `;
+        }
+      });
+    });
+  </script>
 </body>
-</html>
+
+</html>    
