@@ -1,396 +1,149 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-  <title>黑冰-SBS拉链产品数据中心</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">
+  <title>SBS拉链 Zipper</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 引用 Smiley Sans 字体 -->
+  <link href="https://cdn.jsdelivr.net/gh/atelier-anchor/smiley-sans/SmileySans-Oblique.subset.css" rel="stylesheet" />
   <style>
-    /* 引用 Smiley Sans 字体 */
-    @font-face {
-      font-family: 'Smiley Sans';
-      src: url('fonts/SmileySans-Oblique.otf.woff2') format('woff2');
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
     }
 
-    :root {
-      --primary: #2c7be5;
-      --secondary: #6e84a3;
-      --success: #00ac69;
-      --warning: #f6c343;
-      --border-radius: 8px;
-      --box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    html, body {
+      background: #000;
+      color: #fff;
+      font-family: 'Smiley Sans', sans-serif;
+      line-height: 1.6;
+      height: 100%;
     }
-    body {
-      background: #f5f5f7;
-      padding: 1rem;
-      /* 使用 Smiley Sans 字体 */
-      font-family: 'Smiley Sans', system-ui, sans-serif;
+
+    .layout {
+      display: flex;
+      min-height: 100vh;
     }
-    .price { color: var(--success); font-weight: bold; }
-    th.sortable { cursor: pointer; transition: background 0.2s; }
-    th.sortable:hover { background: #e3f2fd; }
-    th.sort-asc::after { content: " ▲"; font-size: 0.8rem; }
-    th.sort-desc::after { content: " ▼"; font-size: 0.8rem; }
-    .table-hover tbody tr { transition: transform 0.2s; }
-    .table-hover tbody tr:hover { transform: translateX(4px); }
-    .sticky-header { position: sticky; top: 0; z-index: 10; }
-    .highlight { background-color: #e8f4ff !important; }
-    #historyList div { padding: 0.5rem; border-bottom: 1px solid #eee; }
-    #historyList div:hover { background: #f8f9fa; }
+
+    .sidebar {
+      width: 240px;
+      padding: 40px 24px;
+      border-right: 1px solid #333;
+    }
+
+    .sidebar h1 {
+      font-size: 24px;
+      margin-bottom: 40px;
+      font-weight: bold;
+    }
+
+    .sidebar nav a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      margin: 12px 0;
+      font-size: 20px;
+    }
+
+    .sidebar nav a.active {
+      color: #ff0;
+    }
+
+    .contact {
+      margin-top: 80px;
+      font-size: 14px;
+      line-height: 1.8;
+    }
+
+    .main {
+      flex: 1;
+      padding: 64px;
+    }
+
+    .main h2 {
+      font-size: 32px;
+      margin-bottom: 16px;
+    }
+
+    .main p {
+      max-width: 600px;
+      font-size: 18px;
+      margin-bottom: 24px;
+    }
+
+    .main .title-cn {
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
+
+    .main .title-en {
+      font-size: 32px;
+      font-style: italic;
+      color: #ccc;
+      margin-bottom: 32px;
+    }
+
+    .main a {
+      color: #fff;
+      text-decoration: none;
+      display: inline-block;
+      margin-right: 24px;
+      font-size: 16px;
+    }
+
+    .main a:hover {
+      color: #ff0;
+    }
+
+    @media (max-width: 768px) {
+      .layout {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #333;
+        padding: 24px;
+      }
+
+      .main {
+        padding: 32px;
+      }
+    }
   </style>
 </head>
 <body>
-<div class="container bg-white p-4 rounded-3 shadow">
-  <header class="mb-4">
-    <h1 class="text-primary mb-3">黑冰-SBS拉链产品数据中心</h1>
-    <div class="input-group">
-      <input type="text" id="searchInput" class="form-control form-control-lg" 
-             placeholder="搜索产品（支持编号、辅料品名、规格、备注）">
-      <button class="btn btn-outline-secondary" type="button" id="clearSearch">
-        <i class="bi bi-x-lg"></i>
-      </button>
+  <div class="layout">
+    <div class="sidebar">
+      <h1>SBS  ZIPPER</h1>
+      <nav>
+        <a class="active" href="#">works</a>
+        <a href="#">products</a>
+        <a href="#">Price calculator</a>
+      </nav>
+      <div class="contact">
+        福建浔兴拉链科技股份有限公司<br>
+        谢剑平<br>
+        phone：15396377670<br>
+      
+       福建泉州晋江深沪浔兴拉链老厂
+      </div>
     </div>
-  </header>
+    <div class="main">
+      <h2>Zipper Design</h2>
+         <strong>D:</strong> SBS团队</p>
 
-  <div class="table-responsive mb-4">
-    <table class="table table-hover table-striped align-middle">
-      <thead class="table-primary sticky-header">
-        <tr>
-          <th data-sort="code" class="sortable">编号</th>
-          <th data-sort="name" class="sortable">辅料品名</th>
-          <th data-sort="specification" class="sortable">规格</th>
-          <th data-sort="price" class="sortable">报价（元）</th>
-          <th data-sort="cmPrice" class="sortable">每公分加减</th>
-          <th data-sort="remark" class="sortable">备注</th>
-        </tr>
-      </thead>
-      <tbody id="tableBody"></tbody>
-    </table>
-    <div id="noResults" class="text-center text-muted py-4" style="display:none;">
-      没有找到匹配的产品
+      <p class="title-cn">拉链。</p>
+      <p class="title-en">Small Zipper, Big World.</p>
+
+      <p>我们专注于各类高品质拉链的研发与制造，融合技术与艺术，为功能性与美学提供平衡方案。</p>
+      <p>We design and develop functional, stylish zippers that balance precision engineering and visual appeal.</p>
+
+
     </div>
   </div>
-
-  <section class="bg-light rounded-3 p-4 shadow-sm">
-    <h2 class="text-primary mb-4">价格计算器 <i class="bi bi-calculator"></i></h2>
-    <div class="row g-3 mb-4">
-      <div class="col-md-6">
-        <div class="alert alert-info mb-0">
-          <div class="d-flex justify-content-between">
-            <div>当前产品：</div>
-            <strong id="currentProduct">未选择</strong>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="alert alert-light mb-0">
-          基准价格：<span id="basePrice" class="price">¥0.000</span>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="alert alert-light mb-0">
-          每厘米价：<span id="cmPrice">¥0.0000/cm</span>
-        </div>
-      </div>
-      <div class="col-md-6">
-        <div class="alert alert-info mb-0">
-          <div class="d-flex justify-content-between">
-            <div>当前拉片：</div>
-            <strong id="currentPullTab">未选择</strong>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3">
-        <div class="alert alert-light mb-0">
-          拉片价格：<span id="pullTabPrice" class="price">¥0.000</span>
-        </div>
-      </div>
-    </div>
-
-    <div class="row g-3">
-      <div class="col-md-8">
-        <input type="range" class="form-range" id="lengthRange" min="5" max="100" step="1">
-        <div class="input-group">
-          <span class="input-group-text">定制长度</span>
-          <input type="number" id="customLength" class="form-control form-control-lg" 
-                 min="5" max="100" placeholder="5-100厘米">
-          <span class="input-group-text">厘米</span>
-        </div>
-      </div>
-      <div class="col-md-4 d-grid">
-        <button id="calculateBtn" class="btn btn-primary btn-lg h-100">
-          <i class="bi bi-cash-coin"></i> 计算总价
-        </button>
-      </div>
-    </div>
-
-    <div class="result mt-4" id="result" style="display: none;">
-      <div class="alert alert-success">
-        <h5 class="alert-heading">总价: <span id="totalPrice" class="price">¥0.0000</span></h5>
-        <div id="calculationDetail" class="small mb-0"></div>
-      </div>
-    </div>
-
-    <div class="history mt-4" id="history" style="display:none;">
-      <div class="d-flex justify-content-between align-items-center mb-3">
-        <h5 class="text-primary mb-0">计算历史 <i class="bi bi-clock-history"></i></h5>
-        <button id="clearHistory" class="btn btn-sm btn-outline-danger">清空历史</button>
-      </div>
-      <div id="historyList" class="bg-white rounded-2 p-2 shadow-sm"></div>
-    </div>
-  </section>
-</div>
-
-<script>
-  // 配置项
-  const CONFIG = {
-    priceUnit: '¥',
-    baseLength: 30,
-    storageKey: 'calculationHistory'
-  };
-
-  // 产品数据
-  const products = [
-    { code: 'SBS-0010', name: 'D5#开口箭形牙（M-H)钩型上止', specification: '30', price: 2.224, cmPrice: 0.027, remark: '不含拉头' },
-    { code: 'SBS-0051', name: 'D5#开口仿金属M-H牙指定牙钩型上止', specification: '30', price: 2.216, cmPrice: 0.027, remark: '不含拉头' },
-    { code: 'SBS-0050', name: 'D5#闭口仿金属M-H牙', specification: '30', price: 2.1245, cmPrice: 0.027, remark: '不含拉头' },
-    { code: 'SBS-0040', name: 'D5#开口仿金属M-H牙钩型上止', specification: '30', price: 1.9125, cmPrice: 0.027, remark: '不含拉头' },
-    { code: 'SBS-0061', name: 'D5#双开口仿金属M-H牙指定牙钩型上止', specification: '30', price: 2.44, cmPrice: 0.027, remark: '不含拉头' },
-    { code: 'SBS-0060', name: 'D5#双开口仿金属M-H牙钩型上止', specification: '30', price: 2.12, cmPrice: 0.027, remark: '不含拉头' },
-    { code: 'SBS-0080', name: 'D3#互拼开口钩型上止+旋转头', specification: '30', price: 1.505, cmPrice: 0.011, remark: '不含拉头' },
-    { code: 'SBS-0020', name: 'D3#互拼开口左插钩型上止', specification: '30', price: 1.505, cmPrice: 0.011, remark: '不含拉头' },
-    { code: 'SBS-0030', name: 'N3#AD注塑背拉开口直边上止', specification: '30', price: 1.274, cmPrice: 0.006, remark: '不含拉头' },
-    { code: 'SBS-101', name: '5#多凹圆点尖尾烤漆', specification: '', price: 0.65, cmPrice: 0, remark: '' },
-    { code: 'SBS-102', name: '旋转头葫芦片冷喷', specification: '', price: 0.6, cmPrice: 0, remark: '' },
-    { code: 'SBS-103', name: '无字葫芦片（烤漆）', specification: '', price: 0.3, cmPrice: 0, remark: '' }
-  ];
-
-  let state = {
-    selectedProduct: null,
-    selectedPullTab: null,
-    filteredProducts: [...products],
-    sortConfig: { key: null, direction: 'asc' },
-    calculationHistory: JSON.parse(localStorage.getItem(CONFIG.storageKey)) || []
-  };
-
-  // 初始化
-  function init() {
-    renderTable();
-    loadHistory();
-    addEventListeners();
-    if (state.filteredProducts.length > 0) {
-      const nonPullTabProducts = state.filteredProducts.filter(product => !['SBS-101', 'SBS-102', 'SBS-103'].includes(product.code));
-      if (nonPullTabProducts.length > 0) selectProduct(nonPullTabProducts[0]);
-    }
-  }
-
-  // 事件监听
-  function addEventListeners() {
-    document.getElementById('searchInput').addEventListener('input', handleSearch);
-    document.getElementById('clearSearch').addEventListener('click', clearSearch);
-    document.querySelectorAll('th[data-sort]').forEach(th => {
-      th.addEventListener('click', () => handleSort(th.dataset.sort));
-    });
-    document.getElementById('calculateBtn').addEventListener('click', calculatePrice);
-    document.getElementById('lengthRange').addEventListener('input', syncRangeWithInput);
-    document.getElementById('customLength').addEventListener('input', syncInputWithRange);
-    document.getElementById('clearHistory').addEventListener('click', clearHistory);
-    document.getElementById('tableBody').addEventListener('click', function (event) {
-      const targetRow = event.target.closest('tr');
-      if (targetRow) {
-        const index = Array.from(targetRow.parentNode.children).indexOf(targetRow);
-        const product = state.filteredProducts[index];
-        if (['SBS-101', 'SBS-102', 'SBS-103'].includes(product.code)) {
-          selectPullTab(product);
-        } else {
-          selectProduct(product);
-        }
-      }
-    });
-  }
-
-  // 表格渲染
-  function renderTable() {
-    const tbody = document.getElementById('tableBody');
-    const noResults = document.getElementById('noResults');
-    
-    tbody.innerHTML = state.filteredProducts.map(product => `
-      <tr class="${(state.selectedProduct?.code === product.code &&!['SBS-101', 'SBS-102', 'SBS-103'].includes(product.code)) || (state.selectedPullTab?.code === product.code && ['SBS-101', 'SBS-102', 'SBS-103'].includes(product.code))? 'highlight' : ''}">
-        <td>${product.code}</td>
-        <td>${product.name}</td>
-        <td>${product.specification}</td>
-        <td class="price">${formatPrice(product.price, 3)}</td>
-        <td>${formatPrice(product.cmPrice, 4)}/cm</td>
-        <td>${product.remark}</td>
-      </tr>
-    `).join('');
-
-    noResults.style.display = state.filteredProducts.length ? 'none' : 'block';
-  }
-
-  // 价格格式化
-  function formatPrice(value, decimals = 2) {
-    return `${CONFIG.priceUnit}${value.toFixed(decimals)}`;
-  }
-
-  // 排序处理
-  function handleSort(key) {
-    let direction = 'asc';
-    if (state.sortConfig.key === key && state.sortConfig.direction === 'asc') {
-      direction = 'desc';
-    }
-    state.sortConfig = { key, direction };
-    
-    state.filteredProducts.sort((a, b) => {
-      if (a[key] < b[key]) return direction === 'asc' ? -1 : 1;
-      if (a[key] > b[key]) return direction === 'asc' ? 1 : -1;
-      return 0;
-    });
-
-    updateSortIndicators();
-    renderTable();
-  }
-
-  // 更新排序指示器
-  function updateSortIndicators() {
-    document.querySelectorAll('th').forEach(th => {
-      th.classList.remove('sort-asc', 'sort-desc');
-      if (th.dataset.sort === state.sortConfig.key) {
-        th.classList.add(`sort-${state.sortConfig.direction}`);
-      }
-    });
-  }
-
-  // 搜索处理
-  function handleSearch() {
-    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-    state.filteredProducts = products.filter(product => {
-      return (
-        product.code.toLowerCase().includes(searchTerm) ||
-        product.name.toLowerCase().includes(searchTerm) ||
-        product.specification.toLowerCase().includes(searchTerm) ||
-        product.remark.toLowerCase().includes(searchTerm)
-      );
-    });
-    renderTable();
-    if (state.filteredProducts.length > 0) {
-      const nonPullTabProducts = state.filteredProducts.filter(product => !['SBS-101', 'SBS-102', 'SBS-103'].includes(product.code));
-      if (nonPullTabProducts.length > 0) selectProduct(nonPullTabProducts[0]);
-    }
-  }
-
-  // 清除搜索
-  function clearSearch() {
-    document.getElementById('searchInput').value = '';
-    state.filteredProducts = [...products];
-    renderTable();
-    if (state.filteredProducts.length > 0) {
-      const nonPullTabProducts = state.filteredProducts.filter(product => !['SBS-101', 'SBS-102', 'SBS-103'].includes(product.code));
-      if (nonPullTabProducts.length > 0) selectProduct(nonPullTabProducts[0]);
-    }
-  }
-
-  // 选择产品
-  function selectProduct(product) {
-    state.selectedProduct = product;
-    document.getElementById('currentProduct').textContent = product.name;
-    document.getElementById('basePrice').textContent = formatPrice(product.price, 3);
-    document.getElementById('cmPrice').textContent = `${formatPrice(product.cmPrice, 4)}/cm`;
-    renderTable();
-  }
-
-  // 选择拉片
-  function selectPullTab(product) {
-    state.selectedPullTab = product;
-    document.getElementById('currentPullTab').textContent = product.name;
-    document.getElementById('pullTabPrice').textContent = formatPrice(product.price, 3);
-    renderTable();
-  }
-
-  // 同步范围输入和数字输入
-  function syncRangeWithInput() {
-    const rangeValue = document.getElementById('lengthRange').value;
-    document.getElementById('customLength').value = rangeValue;
-  }
-
-  function syncInputWithRange() {
-    const inputValue = document.getElementById('customLength').value;
-    document.getElementById('lengthRange').value = inputValue;
-  }
-
-  // 计算价格
-  function calculatePrice() {
-    const selectedProduct = state.selectedProduct;
-    const selectedPullTab = state.selectedPullTab;
-    if (!selectedProduct) {
-      alert('请选择拉链产品');
-      return;
-    }
-
-    const customLength = parseInt(document.getElementById('customLength').value);
-    if (isNaN(customLength) || customLength < 5 || customLength > 300) {
-      alert('请输入5到300之间的有效长度');
-      return;
-    }
-
-    const basePrice = selectedProduct.price;
-    const cmPrice = selectedProduct.cmPrice;
-    const pullTabPrice = selectedPullTab? selectedPullTab.price : 0;
-    const totalPrice = basePrice + (customLength - CONFIG.baseLength) * cmPrice + pullTabPrice;
-
-    const resultDiv = document.getElementById('result');
-    resultDiv.style.display = 'block';
-    document.getElementById('totalPrice').textContent = formatPrice(totalPrice, 4);
-    let calculationDetail = `基准价格: ${formatPrice(basePrice, 3)} + 每厘米差价: ${formatPrice(cmPrice, 4)} x (${customLength} - ${CONFIG.baseLength})cm`;
-    if (selectedPullTab) {
-      calculationDetail += ` + 拉片价格: ${formatPrice(pullTabPrice, 3)}`;
-    }
-    document.getElementById('calculationDetail').textContent = calculationDetail;
-
-    const historyItem = {
-      productName: selectedProduct.name,
-      pullTabName: selectedPullTab? selectedPullTab.name : '无',
-      customLength,
-      totalPrice
-    };
-    state.calculationHistory.push(historyItem);
-    saveHistory();
-    loadHistory();
-  }
-
-  // 加载历史记录
-  function loadHistory() {
-    const historyList = document.getElementById('historyList');
-    const historyDiv = document.getElementById('history');
-    historyList.innerHTML = '';
-
-    if (state.calculationHistory.length === 0) {
-      historyDiv.style.display = 'none';
-      return;
-    }
-
-    historyDiv.style.display = 'block';
-    state.calculationHistory.forEach((item, index) => {
-      const div = document.createElement('div');
-      div.textContent = `${item.productName} - 拉片: ${item.pullTabName} - 长度: ${item.customLength}cm - 总价: ${formatPrice(item.totalPrice, 4)}`;
-      historyList.appendChild(div);
-    });
-  }
-
-  // 清空历史记录
-  function clearHistory() {
-    state.calculationHistory = [];
-    saveHistory();
-    loadHistory();
-  }
-
-  // 持久化历史记录
-  function saveHistory() {
-    localStorage.setItem(CONFIG.storageKey, JSON.stringify(state.calculationHistory));
-  }
-
-  // 初始化执行
-  init();
-</script>
 </body>
 </html>
