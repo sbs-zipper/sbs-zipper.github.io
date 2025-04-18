@@ -76,7 +76,7 @@
   <h1>拉链价格计算器</h1>
   <div class="form-group">
     <label>基准长度（cm）</label>
-    <input type="number" id="baseLength" value="1" min="1" step="1" placeholder="请输入基准长度">
+    <input type="number" id="baseLength" value="1" min="1" step="0.0001" placeholder="请输入基准长度">
   </div>
 
   <div class="form-group">
@@ -96,7 +96,7 @@
 
   <div class="form-group slider-container">
     <label>选择拉链长度（10~100cm）</label>
-    <input type="range" id="zipLength" min="10" max="100" value="60">
+    <input type="range" id="zipLength" min="10" max="100" value="60" step="0.0001">
     <div class="slider-value">
       当前长度：<span id="lengthDisplay">60</span> cm
     </div>
@@ -104,7 +104,7 @@
 
   <div class="form-group">
     <label>采购数量（条）</label>
-    <input type="number" id="quantity" value="1" min="1" step="1">
+    <input type="number" id="quantity" value="1" min="1" step="0.0001">
   </div>
 
   <button onclick="calculatePrice()">计算定制总价</button>
@@ -133,35 +133,35 @@
     });
 
     function calculatePrice() {
-      const baseLength = parseFloat(baseLengthInput.value);
-      const basePrice = parseFloat(basePriceInput.value);
-      const adjustPrice = parseFloat(adjustPriceInput.value);
-      const sliderPrice = parseFloat(document.getElementById('sliderPrice').value);
-      const zipLength = parseInt(zipLengthSlider.value);
-      const quantity = parseInt(document.getElementById('quantity').value);
+      const baseLength = parseFloat(baseLengthInput.value).toFixed(4);
+      const basePrice = parseFloat(basePriceInput.value).toFixed(4);
+      const adjustPrice = parseFloat(adjustPriceInput.value).toFixed(4);
+      const sliderPrice = parseFloat(document.getElementById('sliderPrice').value).toFixed(4);
+      const zipLength = parseFloat(zipLengthSlider.value).toFixed(4);
+      const quantity = parseFloat(document.getElementById('quantity').value).toFixed(4);
 
       if (
-        isNaN(baseLength) || isNaN(basePrice) ||
-        isNaN(adjustPrice) || isNaN(sliderPrice) ||
-        isNaN(zipLength) || isNaN(quantity)
+        isNaN(parseFloat(baseLength)) || isNaN(parseFloat(basePrice)) ||
+        isNaN(parseFloat(adjustPrice)) || isNaN(parseFloat(sliderPrice)) ||
+        isNaN(parseFloat(zipLength)) || isNaN(parseFloat(quantity))
       ) {
         document.getElementById('calculationResult').textContent = '请检查输入的数值是否正确';
         return;
       }
 
-      const diff = zipLength - baseLength;
-      const adjust = parseFloat((diff * adjustPrice).toFixed(4));
-      const unitPrice = parseFloat((basePrice + adjust + sliderPrice).toFixed(4));
-      const total = parseFloat((unitPrice * quantity).toFixed(4));
+      const diff = parseFloat(zipLength) - parseFloat(baseLength);
+      const adjust = (diff * parseFloat(adjustPrice)).toFixed(4);
+      const unitPrice = (parseFloat(basePrice) + parseFloat(adjust) + parseFloat(sliderPrice)).toFixed(4);
+      const total = (parseFloat(unitPrice) * parseFloat(quantity)).toFixed(4);
 
       const formula = `
 每条总价 = 基准价 + (当前长度 - 基准长度) × 加减价 + 拉头价
-          = ${basePrice.toFixed(4)} + (${zipLength} - ${baseLength}) × ${adjustPrice.toFixed(4)} + ${sliderPrice.toFixed(4)}
-          = ${basePrice.toFixed(4)} + (${diff} × ${adjustPrice.toFixed(4)}) + ${sliderPrice.toFixed(4)}
-          = ${(basePrice + adjust).toFixed(4)} + ${sliderPrice.toFixed(4)}
-          = ${unitPrice.toFixed(4)} 元/条
+          = ${basePrice} + (${zipLength} - ${baseLength}) × ${adjustPrice} + ${sliderPrice}
+          = ${basePrice} + (${diff} × ${adjustPrice}) + ${sliderPrice}
+          = ${(parseFloat(basePrice) + parseFloat(adjust)).toFixed(4)} + ${sliderPrice}
+          = ${unitPrice} 元/条
 
-总价 = 每条总价 × 数量 = ${unitPrice.toFixed(4)} × ${quantity} = ¥ ${total.toFixed(4)}
+总价 = 每条总价 × 数量 = ${unitPrice} × ${quantity} = ¥ ${total}
 `;
 
       document.getElementById('calculationResult').textContent = formula;
@@ -170,4 +170,3 @@
 </body>
 
 </html>
-    
