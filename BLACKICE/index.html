@@ -167,6 +167,13 @@
       color: red;
       font-size: 18px;
       margin-top: 20px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .no-results.show {
+      display: block;
+      opacity: 1;
     }
 
     table {
@@ -188,6 +195,10 @@
     tr:hover {
       background-color: #222;
     }
+
+    tr[tabindex]:focus {
+      background-color: #222;
+    }
   </style>
 </head>
 
@@ -195,25 +206,15 @@
   <div class="layout">
     <div class="sidebar">
       <h1>SBS ZIPPER</h1>
-      <h2>浔兴拉链</h2>
       <nav>
         <a class="active" href="/products">products</a>
-       
+        <a href="/calculator">Price calculator</a>
       </nav>
       <div class="contact">
-        1.价格将随原材料价格涨跌而调整.；<br>                                                                                                                                                                                                                                                                              						
-2.价格含普通自动头，采用其他特殊拉头按拉头差价另外加价；<br>						
-3.价格为出厂含税价，含运费到客户方联运站；<br>						
-4.出口汇率:USD1.00:RMB6.50；<br>						
-5.每种颜色1000条以下需加染费150元/色<br>                                                                                                                                                                                                                                                                                                                                                                                                                                                                    						
-6.长度100cm以上（含）加价10%；250cm以上（含）加价20%；500cm以上（含）加价30%。 <br>                                                                                                                                                                                                                                                                                                       						
-7.开口低于20CM以下按20CM计价；闭品低于10CM以下按10CM计价；<br>						
-8.X、O型双闭口链在闭口价格的基础上加价50%；<br>	
-        <br>	
-<a class="active">福建浔兴拉链科技股份有限公司</a><br>	
-        <a class="active">姓名：谢剑平</a><br>	
-        <a class="active">手机：15396377670</a><br>	
-        <a class="active">地址：福建泉州晋江深沪浔兴拉链老厂</a><br>	
+        福建浔兴拉链科技股份有限公司<br>
+        姓名：谢剑平<br>
+        手机：15396377670<br>
+        地址：福建泉州晋江深沪浔兴拉链老厂
       </div>
     </div>
     <div class="main">
@@ -221,10 +222,10 @@
       <div class="main-content p-4">
         <h1 class="text-2xl font-bold mb-4">黑冰-SBS拉链产品数据中心</h1>
         <input type="search" id="searchInput" placeholder="搜索产品（支持编号、辅料品名、规格、备注）"
-          class="w-full p-2 border border-gray-300 mb-4">
+          class="w-full p-2 border border-gray-300 mb-4" aria-label="搜索产品">
         <p class="no-results" id="noResults">未找到匹配的产品。</p>
         <h2 class="text-xl font-bold mb-4">产品列表</h2>
-        <table class="table-auto w-full">
+        <table class="table-auto w-full" aria-label="产品列表" role="grid">
           <thead>
             <tr>
               <th class="px-4 py-2">编码</th>
@@ -236,7 +237,7 @@
             </tr>
           </thead>
           <tbody>
-            <tr data-product="SBS-001|1.574|0.0060">
+            <tr data-product="SBS-001|1.574|0.0060" tabindex="0">
               <td class="px-4 py-2">SBS-001</td>
               <td class="px-4 py-2">葫芦片（无镍黑镍色）3号尼龙开尾反装 注塑上止</td>
               <td class="px-4 py-2">30cm</td>
@@ -244,7 +245,7 @@
               <td class="px-4 py-2">¥0.0060/cm</td>
               <td class="px-4 py-2">N3#AD注塑背拉开口直边上止</td>
             </tr>
-            <tr data-product="SBS-002|1.505|0.0110">
+            <tr data-product="SBS-002|1.505|0.0110" tabindex="0">
               <td class="px-4 py-2">SBS-002</td>
               <td class="px-4 py-2">葫芦片（顺色冷喷亮漆 ）3#树脂 开尾  左插 互拼</td>
               <td class="px-4 py-2">30cm</td>
@@ -252,7 +253,7 @@
               <td class="px-4 py-2">¥0.0110/cm</td>
               <td class="px-4 py-2">D3#互拼开口左插钩型上止</td>
             </tr>
-            <tr data-product="SBS-003|2.774|0.0270">
+            <tr data-product="SBS-003|2.774|0.0270" tabindex="0">
               <td class="px-4 py-2">SBS-003</td>
               <td class="px-4 py-2">多凹圆点（顺色挂喷哑漆）5#树脂仿金属 闭尾 M-H牙 注塑上下止 </td>
               <td class="px-4 py-2">30cm</td>
@@ -260,7 +261,7 @@
               <td class="px-4 py-2">¥0.0270/cm</td>
               <td class="px-4 py-2">P05DAA01996 </td>
             </tr>
-            <tr data-product="SBS-004|2.563|0.0270">
+            <tr data-product="SBS-004|2.563|0.0270" tabindex="0">
               <td class="px-4 py-2">SBS-004</td>
               <td class="px-4 py-2">多凹圆点（顺色挂喷哑漆）5#树脂仿金属 开尾 M-H牙 勾型上止 </td>
               <td class="px-4 py-2">30cm</td>
@@ -268,7 +269,7 @@
               <td class="px-4 py-2">¥0.0270/cm</td>
               <td class="px-4 py-2">P05DAA01996 </td>
             </tr>
-            <tr data-product="SBS-005|2.866|0.0270">
+            <tr data-product="SBS-005|2.866|0.0270" tabindex="0">
               <td class="px-4 py-2">SBS-005</td>
               <td class="px-4 py-2">多凹圆点（顺色挂喷哑漆）5#树脂仿金属 开尾 M-H牙指定牙（袋布牙齿异色） 勾型上止 </td>
               <td class="px-4 py-2">30cm</td>
@@ -276,7 +277,7 @@
               <td class="px-4 py-2">¥0.0270/cm</td>
               <td class="px-4 py-2">P05DAA01996</td>
             </tr>
-            <tr data-product="SBS-006|3.42|0.0270">
+            <tr data-product="SBS-006|3.42|0.0270" tabindex="0">
               <td class="px-4 py-2">SBS-006</td>
               <td class="px-4 py-2">多凹圆点（顺色挂喷哑漆）5#树脂仿金属 双开尾 M-H牙 勾型上止</td>
               <td class="px-4 py-2">30cm</td>
@@ -284,7 +285,7 @@
               <td class="px-4 py-2">¥0.0270/cm</td>
               <td class="px-4 py-2">P05DAA01996</td>
             </tr>
-            <tr data-product="SBS-007|1.274|0.0060">
+            <tr data-product="SBS-007|1.274|0.0060" tabindex="0">
               <td class="px-4 py-2">SBS-007</td>
               <td class="px-4 py-2">无字葫芦头（顺色冷喷亮漆）3#尼龙反装 开尾 直边上止 </td>
               <td class="px-4 py-2">30cm</td>
@@ -292,23 +293,23 @@
               <td class="px-4 py-2">¥0.0060/cm</td>
               <td class="px-4 py-2">N3#AD注塑背拉开口直边上止</td>
             </tr>
-            <tr data-product="SBS-008|2.105|0.0100">
+            <tr data-product="SBS-008|2.105|0.0100" tabindex="0">
               <td class="px-4 py-2">SBS-008</td>
               <td class="px-4 py-2">葫芦片（顺色冷喷亮漆）3#树脂 开尾  旋转头+互拼</td>
               <td class="px-4 py-2">30cm</td>
               <td class="px-4 py-2">¥2.105</td>
-              <td class="px-4 py-2">¥0.0110/cm</td>
+              <td class="px-4 py-2">¥0.0100/cm</td>
               <td class="px-4 py-2">D3#互拼开口钩型上止</td>
             </tr>
-            <tr data-product="SBS-009|0.9|0.0060">
+            <tr data-product="SBS-009|0.9|0.0060" tabindex="0">
               <td class="px-4 py-2">SBS-009</td>
               <td class="px-4 py-2">无字葫芦头 （顺色挂喷哑漆 ）3#尼龙反装 闭尾 无上下止 拉头在中间  </td>
               <td class="px-4 py-2">30cm</td>
-              <td class="px-4 py-2">¥0.864</td>
+              <td class="px-4 py-2">¥0.9</td>
               <td class="px-4 py-2">¥0.0060/cm</td>
               <td class="px-4 py-2">-</td>
             </tr>
-            <tr data-product="SBS-010|2.35|0.0850">
+            <tr data-product="SBS-010|2.35|0.0850" tabindex="0">
               <td class="px-4 py-2">SBS-010</td>
               <td class="px-4 py-2">3#竖孔椭圆PH6016 （无镍白）3号尼龙反装顺滑拉链闭尾，无上下止两端闭合，顺布边色</td>
               <td class="px-4 py-2">30cm</td>
@@ -316,7 +317,7 @@
               <td class="px-4 py-2">¥0.0850/cm</td>
               <td class="px-4 py-2">-</td>
             </tr>
-            <tr data-product="SBS-011|1.774|0.0060">
+            <tr data-product="SBS-011|1.774|0.0060" tabindex="0">
               <td class="px-4 py-2">SBS-011</td>
               <td class="px-4 py-2">3#竖孔椭圆PH6016 （无镍白）3号尼龙反装注塑普通拉链开尾，注塑上止，拉头顺色</td>
               <td class="px-4 py-2">30cm</td>
@@ -373,9 +374,22 @@
         }
       });
       if (hasResults) {
-        noResults.style.display = 'none';
+        noResults.classList.remove('show');
       } else {
-        noResults.style.display = 'block';
+        noResults.classList.add('show');
+      }
+    });
+
+    let currentFocus = -1;
+    document.addEventListener('keydown', function (event) {
+      if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        currentFocus = (currentFocus + 1) % productRows.length;
+        productRows[currentFocus].focus();
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        currentFocus = (currentFocus - 1 + productRows.length) % productRows.length;
+        productRows[currentFocus].focus();
       }
     });
   </script>
