@@ -1,325 +1,354 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh">
 
 <head>
-    <meta charset="UTF-8">
-    <title>黑冰-SBS拉链产品数据中心</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css" rel="stylesheet">
-    <style>
-        @font-face {
-            font-family: 'Smiley Sans';
-            src: url('https://github.com/atelier-anchor/smiley-sans/raw/main/fonts/SmileySans-Oblique.ttf') format('truetype');
-        }
+  <meta charset="UTF-8">
+  <title>SBS ZIPPER-浔兴股份 </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 引用 Smiley Sans 字体 -->
+  <link href="https://cdn.jsdelivr.net/gh/atelier-anchor/smiley-sans/SmileySans-Oblique.subset.css" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            font-family: 'Smiley Sans', -apple-system, sans-serif;
-            display: flex;
-            max-width: 1200px;
-            margin: 2rem auto;
-            padding: 0 1rem;
-            color: #000;
-            background: #fff;
-        }
+    html,
+    body {
+      background: #000;
+      color: #fff;
+      font-family: 'Smiley Sans', sans-serif;
+      line-height: 1.8;
+      height: 100%;
+    }
 
-        /* 侧边栏样式 */
-       .sidebar {
-            width: 280px;
-            margin-right: 2rem;
-            padding-right: 2rem;
-            border-right: 2px solid #000;
-            background-color: #000;
-            color: #fff;
-        }
+    .layout {
+      display: flex;
+    }
 
-       .price-rules {
-            font-size: 0.9rem;
-            line-height: 1.6;
-            max-height: 70vh;
-            overflow-y: auto;
-        }
+    .sidebar {
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      width: 240px;
+      padding: 40px 24px;
+      /* 删除边框样式 */
+      background: #000;
+      overflow-y: auto;
+    }
 
-        /* 主内容区 */
-       .main-content {
-            flex: 1;
-        }
+    .sidebar h1 {
+      font-size: 24px;
+      margin-bottom: 40px;
+      font-weight: bold;
+    }
 
-        h1 {
-            font-size: 1.8rem;
-            margin-bottom: 2rem;
-        }
+    .sidebar nav a {
+      display: block;
+      color: white;
+      text-decoration: none;
+      margin: 12px 0;
+      font-size: 20px;
+      transition: color 0.3s ease;
+    }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+    .sidebar nav a.active,
+    .sidebar nav a:hover {
+      color: #ff0;
+    }
 
-        th,
-        td {
-            padding: 0.8rem;
-            border-bottom: 1px solid #000;
-        }
+    .contact {
+      margin-top: 80px;
+      font-size: 14px;
+      line-height: 1.8;
+    }
 
-        th {
-            background: #f0f0f0;
-        }
+    .main {
+      margin-left: 240px;
+      padding: 64px;
+      /* 减小中间栏目的宽度 */
+      width: calc(60% - 240px);
+      flex-shrink: 0;
+    }
 
-        input,
-        button {
-            border: 1px solid #000;
-        }
+    .main h1 {
+      font-size: 36px;
+      margin-bottom: 16px;
+    }
 
-        button {
-            background: #000;
-            color: #fff;
-            padding: 0.6rem 1.2rem;
-        }
+    .main p {
+      max-width: 100%;
+      font-size: 18px;
+      margin-bottom: 24px;
+    }
 
-       .calculator {
-            background: #f8f8f8;
-            padding: 1.5rem;
-            border: 1px solid #000;
-        }
+    .main .title-cn {
+      font-size: 48px;
+      font-weight: bold;
+      margin-bottom: 8px;
+    }
 
-       .contact {
-            margin-top: 3rem;
-            color: #666;
-        }
+    .main .title-en {
+      font-size: 32px;
+      font-style: italic;
+      color: #ccc;
+      margin-bottom: 32px;
+    }
 
-        @media (max-width: 768px) {
-            body {
-                flex-direction: column;
-            }
+    .main a {
+      color: #fff;
+      text-decoration: none;
+      display: inline-block;
+      margin-right: 24px;
+      font-size: 16px;
+      transition: color 0.3s ease;
+    }
 
-           .sidebar {
-                width: 100%;
-                border-right: none;
-                border-bottom: 2px solid #000;
-            }
+    .main a:hover {
+      color: #ff0;
+    }
 
-           .price-rules {
-                max-height: none;
-            }
-        }
+    .iframe-container {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 40%;
+      height: 100%;
+      /* 删除边框样式 */
+    }
 
-        /* 进度条样式 */
-        input[type="range"] {
-            -webkit-appearance: none;
-            width: 200px;
-            height: 5px;
-            background: #d3d3d3;
-            outline: none;
-            opacity: 0.7;
-            -webkit-transition:.2s;
-            transition: opacity.2s;
-        }
+    .iframe-container iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
 
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 15px;
-            height: 15px;
-            background: #000;
-            cursor: pointer;
-        }
+    @media (max-width: 1024px) {
+      /* 中间栏目在中等屏幕上进一步减小宽度 */
+      .main {
+        width: calc(100% - 240px - 40%);
+        padding: 32px;
+      }
+    }
 
-        input[type="range"]::-moz-range-thumb {
-            width: 15px;
-            height: 15px;
-            background: #000;
-            cursor: pointer;
-        }
+    @media (max-width: 768px) {
+      .sidebar {
+        position: static;
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #333;
+        padding: 24px;
+      }
 
-        /* 产品行点击样式 */
-        table tbody tr {
-            cursor: pointer;
-        }
+      .main {
+        margin-left: 0;
+        width: 100%;
+        padding: 32px;
+      }
 
-        table tbody tr:hover {
-            background-color: #f0f0f0;
-        }
-    </style>
+      .iframe-container {
+        position: static;
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid #333;
+      }
+    }
+
+    /* 添加选中高亮样式 */
+    ::selection {
+      background-color: yellow;
+      color: #000;
+    }
+
+    .no-results {
+      display: none;
+      color: red;
+      font-size: 18px;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 
 <body>
-    <!-- 计价说明侧边栏 -->
-    <div class="sidebar p-4">
-        <h2 class="text-xl font-bold mb-4">计价说明</h2>
-        <div class="price-rules">
-            <p>1. 价格随原材料价格浮动调整</p>
-            <p>2. 含普通自动头，特殊拉头需补差价</p>
-            <p>3. 含税出厂价（含联运站运费）</p>
-            <p>4. 汇率：1USD=6.50RMB</p>
-            <p>5. 单色＜1000条加收150元染费</p>
-            <p>6. 超长加价：<br>▸100cm+10%<br>▸250cm+20%<br>▸500cm+30%</p>
-            <p>7. 最低计费：<br>▸开口＜20cm按20cm<br>▸闭口＜10cm按10cm</p>
-            <p>8. X/O型双闭口加价50%</p>
-        </div>
+  <div class="layout">
+    <div class="sidebar">
+      <h1>SBS ZIPPER</h1>
+      <nav>
+        <a class="active" href="/products">products</a>
+        <a href="/calculator">Price calculator</a>
+      </nav>
+      <div class="contact">
+        福建浔兴拉链科技股份有限公司<br>
+        姓名：谢剑平<br>
+        手机：15396377670<br>
+        地址：福建泉州晋江深沪浔兴拉链老厂
+      </div>
     </div>
-
-    <!-- 主内容区 -->
-    <div class="main-content p-4">
+    <div class="main">
+      <!-- 主内容区 -->
+      <div class="main-content p-4">
         <h1 class="text-2xl font-bold mb-4">黑冰-SBS拉链产品数据中心</h1>
         <input type="search" id="searchInput" placeholder="搜索产品（支持编号、辅料品名、规格、备注）"
-            class="w-full p-2 border border-gray-300 mb-4">
-
+          class="w-full p-2 border border-gray-300 mb-4">
+        <p class="no-results" id="noResults">未找到匹配的产品。</p>
         <h2 class="text-xl font-bold mb-4">产品列表</h2>
         <table class="table-auto w-full">
-            <thead>
-                <tr>
-                    <th class="px-4 py-2">编码</th>
-                    <th class="px-4 py-2">辅料品名</th>
-                    <th class="px-4 py-2">规格</th>
-                    <th class="px-4 py-2">报价（元）</th>
-                    <th class="px-4 py-2">每公分加减</th>
-                    <th class="px-4 py-2">备注</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr data-product="SBS-001|1.574|0.0060">
-                    <td class="px-4 py-2">SBS-001</td>
-                    <td class="px-4 py-2">葫芦片（无镍黑镍色）3号尼龙开尾反装 注塑上止</td>
-                    <td class="px-4 py-2">30cm</td>
-                    <td class="px-4 py-2">¥1.574</td>
-                    <td class="px-4 py-2">¥0.0060/cm</td>
-                    <td class="px-4 py-2">N3#AD注塑背拉开口直边上止</td>
-                </tr>
-                <tr data-product="SBS-002|1.505|0.0110">
-                    <td class="px-4 py-2">SBS-002</td>
-                    <td class="px-4 py-2">葫芦片（顺色冷喷亮漆 ）3#树脂 开尾  左插 互拼</td>
-                    <td class="px-4 py-2">30cm</td>
-                    <td class="px-4 py-2">¥1.505</td>
-                    <td class="px-4 py-2">¥0.0110/cm</td>
-                    <td class="px-4 py-2">D3#互拼开口左插钩型上止</td>
-                </tr>
-                <tr data-product="SBS-003|2.774|0.0270">
-                    <td class="px-4 py-2">SBS-003</td>
-                    <td class="px-4 py-2">多凹圆点（顺色挂喷哑漆）5#树脂仿金属 闭尾 M-H牙 注塑上下止 </td>
-                    <td class="px-4 py-2">30cm</td>
-                    <td class="px-4 py-2">¥2.774</td>
-                    <td class="px-4 py-2">¥0.0270/cm</td>
-                    <td class="px-4 py-2">P05DAA01996 </td>
-                </tr>
-                <tr data-product="SBS-004|2.563|0.0270">
-                    <td class="px-4 py-2">SBS-004</td>
-                    <td class="px-4 py-2">多凹圆点（顺色挂喷哑漆）5#树脂仿金属 开尾 M-H牙 勾型上止 </td>
-                    <td class="px-4 py-2">30cm</td>
-                    <td class="px-4 py-2">¥2.563</td>
-                    <td class="px-4 py-2">¥0.0270/cm</td>
-                    <td class="px-4 py-2">P05DAA01996 </td>
-                </tr>
-                <tr data-product="SBS-005|2.866|0.0270">
-                    <td class="px-4 py-2">SBS-005</td>
-                    <td class="px-4 py-2">多凹圆点（顺色挂喷哑漆）5#树脂仿金属 开尾 M-H牙指定牙（袋布牙齿异色） 勾型上止 </td>
-                    <td class="px-4 py-2">30cm</td>
-                    <td class="px-4 py-2">¥2.866</td>
-                    <td class="px-4 py-2">¥0.0270/cm</td>
-                    <td class="px-4 py-2">P05DAA01996</td>
-                </tr>
-                <tr data-product="SBS-006|3.42|0.0270">
-                    <td class="px-4 py-2">SBS-006</td>
-                    <td class="px-4 py-2">多凹圆点（顺色挂喷哑漆）5#树脂仿金属 双开尾 M-H牙 勾型上止</td>
-                    <td class="px-4 py-2">30cm</td>
-                    <td class="px-4 py-2">¥3.42</td>
-                    <td class="px-4 py-2">¥0.0270/cm</td>
-                    <td class="px-4 py-2">P05DAA01996</td>
-                </tr>
-                <tr data-product="SBS-007|1.274|0.0060">
-                    <td class="px-4 py-2">SBS-007</td>
-                    <td class="px-4 py-2">无字葫芦头（顺色冷喷亮漆）3#尼龙反装 开尾 直边上止 </td>
-                    <td class="px-4 py-2">30cm</td>
-                    <td class="px-4 py-2">¥1.274</td>
-                    <td class="px-4 py-2">¥0.0060/cm</td>
-                    <td class="px-4 py-2">N3#AD注塑背拉开口直边上止</td>
-                </tr>
-                <tr data-product="SBS-008|2.105|0.0100">
-                    <td class="px-4 py-2">SBS-008</td>
-                    <td class="px-4 py-2">葫芦片（顺色冷喷亮漆）3#树脂 开尾  旋转头+互拼</td>
-                    <td class="px-4 py-2">30cm</td>
-                    <td class="px-4 py-2">¥2.105</td>
-                    <td class="px-4 py-2">¥0.0100/cm</td>
-                    <td class="px-4 py-2">D3#互拼开口钩型上止</td>
-                </tr>
-                <tr data-product="SBS-009|0.9|0.0060">
-                    <td class="px-4 py-2">SBS-009</td>
-                    <td class="px-4 py-2">无字葫芦头 （顺色挂喷哑漆 ）3#尼龙反装 闭尾 无上下止 拉头在中间  </td>
-                    <td class="px-4 py-2">30cm</td>
-                    <td class="px-4 py-2">¥0.9</td>
-                    <td class="px-4 py-2">¥0.0060/cm</td>
-                    <td class="px-4 py-2">-</td>
-                </tr>
-                <tr data-product="SBS-010|2.35|0.0850">
-                    <td class="px-4 py-2">SBS-010</td>
-                    <td class="px-4 py-2">3#竖孔椭圆PH6016 （无镍白）3号尼龙反装顺滑拉链闭尾，无上下止两端闭合，顺布边色</td>
-                    <td class="px-4 py-2">30cm</td>
-                    <td class="px-4 py-2">¥2.35</td>
-                    <td class="px-4 py-2">¥0.0850/cm</td>
-                    <td class="px-4 py-2">-</td>
-                </tr>
-                <tr data-product="SBS-011|1.774|0.0060">
-                    <td class="px-4 py-2">SBS-011</td>
-                    <td class="px-4 py-2">3#竖孔椭圆PH6016 （无镍白）3号尼龙反装注塑普通拉链开尾，注塑上止，拉头顺色</td>
-                    <td class="px-4 py-2">30cm</td>
-                    <td class="px-4 py-2">¥1.774</td>
-                    <td class="px-4 py-2">¥0.0060/cm</td>
-                    <td class="px-4 py-2">-</td>
-                </tr>
-            </tbody>
+          <thead>
+            <tr>
+              <th class="px-4 py-2">编码</th>
+              <th class="px-4 py-2">辅料品名</th>
+              <th class="px-4 py-2">规格</th>
+              <th class="px-4 py-2">报价（元）</th>
+              <th class="px-4 py-2">每公分加减</th>
+              <th class="px-4 py-2">备注</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr data-product="SBS-001|1.574|0.0060">
+              <td class="px-4 py-2">SBS-001</td>
+              <td class="px-4 py-2">葫芦片（无镍黑镍色）3号尼龙开尾反装 注塑上止</td>
+              <td class="px-4 py-2">30cm</td>
+              <td class="px-4 py-2">¥1.574</td>
+              <td class="px-4 py-2">¥0.0060/cm</td>
+              <td class="px-4 py-2">N3#AD注塑背拉开口直边上止</td>
+            </tr>
+            <tr data-product="SBS-002|1.505|0.0110">
+              <td class="px-4 py-2">SBS-002</td>
+              <td class="px-4 py-2">葫芦片（顺色冷喷亮漆 ）3#树脂 开尾  左插 互拼</td>
+              <td class="px-4 py-2">30cm</td>
+              <td class="px-4 py-2">¥1.505</td>
+              <td class="px-4 py-2">¥0.0110/cm</td>
+              <td class="px-4 py-2">D3#互拼开口左插钩型上止</td>
+            </tr>
+            <tr data-product="SBS-003|2.774|0.0270">
+              <td class="px-4 py-2">SBS-003</td>
+              <td class="px-4 py-2">多凹圆点（顺色挂喷哑漆）5#树脂仿金属 闭尾 M-H牙 注塑上下止 </td>
+              <td class="px-4 py-2">30cm</td>
+              <td class="px-4 py-2">¥2.774</td>
+              <td class="px-4 py-2">¥0.0270/cm</td>
+              <td class="px-4 py-2">P05DAA01996 </td>
+            </tr>
+            <tr data-product="SBS-004|2.563|0.0270">
+              <td class="px-4 py-2">SBS-004</td>
+              <td class="px-4 py-2">多凹圆点（顺色挂喷哑漆）5#树脂仿金属 开尾 M-H牙 勾型上止 </td>
+              <td class="px-4 py-2">30cm</td>
+              <td class="px-4 py-2">¥2.563</td>
+              <td class="px-4 py-2">¥0.0270/cm</td>
+              <td class="px-4 py-2">P05DAA01996 </td>
+            </tr>
+            <tr data-product="SBS-005|2.866|0.0270">
+              <td class="px-4 py-2">SBS-005</td>
+              <td class="px-4 py-2">多凹圆点（顺色挂喷哑漆）5#树脂仿金属 开尾 M-H牙指定牙（袋布牙齿异色） 勾型上止 </td>
+              <td class="px-4 py-2">30cm</td>
+              <td class="px-4 py-2">¥2.866</td>
+              <td class="px-4 py-2">¥0.0270/cm</td>
+              <td class="px-4 py-2">P05DAA01996</td>
+            </tr>
+            <tr data-product="SBS-006|3.42|0.0270">
+              <td class="px-4 py-2">SBS-006</td>
+              <td class="px-4 py-2">多凹圆点（顺色挂喷哑漆）5#树脂仿金属 双开尾 M-H牙 勾型上止</td>
+              <td class="px-4 py-2">30cm</td>
+              <td class="px-4 py-2">¥3.42</td>
+              <td class="px-4 py-2">¥0.0270/cm</td>
+              <td class="px-4 py-2">P05DAA01996</td>
+            </tr>
+            <tr data-product="SBS-007|1.274|0.0060">
+              <td class="px-4 py-2">SBS-007</td>
+              <td class="px-4 py-2">无字葫芦头（顺色冷喷亮漆）3#尼龙反装 开尾 直边上止 </td>
+              <td class="px-4 py-2">30cm</td>
+              <td class="px-4 py-2">¥1.274</td>
+              <td class="px-4 py-2">¥0.0060/cm</td>
+              <td class="px-4 py-2">N3#AD注塑背拉开口直边上止</td>
+            </tr>
+            <tr data-product="SBS-008|2.105|0.0100">
+              <td class="px-4 py-2">SBS-008</td>
+              <td class="px-4 py-2">葫芦片（顺色冷喷亮漆）3#树脂 开尾  旋转头+互拼</td>
+              <td class="px-4 py-2">30cm</td>
+              <td class="px-4 py-2">¥2.105</td>
+              <td class="px-4 py-2">¥0.0100/cm</td>
+              <td class="px-4 py-2">D3#互拼开口钩型上止</td>
+            </tr>
+            <tr data-product="SBS-009|0.9|0.0060">
+              <td class="px-4 py-2">SBS-009</td>
+              <td class="px-4 py-2">无字葫芦头 （顺色挂喷哑漆 ）3#尼龙反装 闭尾 无上下止 拉头在中间  </td>
+              <td class="px-4 py-2">30cm</td>
+              <td class="px-4 py-2">¥0.9</td>
+              <td class="px-4 py-2">¥0.0060/cm</td>
+              <td class="px-4 py-2">-</td>
+            </tr>
+            <tr data-product="SBS-010|2.35|0.0850">
+              <td class="px-4 py-2">SBS-010</td>
+              <td class="px-4 py-2">3#竖孔椭圆PH6016 （无镍白）3号尼龙反装顺滑拉链闭尾，无上下止两端闭合，顺布边色</td>
+              <td class="px-4 py-2">30cm</td>
+              <td class="px-4 py-2">¥2.35</td>
+              <td class="px-4 py-2">¥0.0850/cm</td>
+              <td class="px-4 py-2">-</td>
+            </tr>
+            <tr data-product="SBS-011|1.774|0.0060">
+              <td class="px-4 py-2">SBS-011</td>
+              <td class="px-4 py-2">3#竖孔椭圆PH6016 （无镍白）3号尼龙反装注塑普通拉链开尾，注塑上止，拉头顺色</td>
+              <td class="px-4 py-2">30cm</td>
+              <td class="px-4 py-2">¥1.774</td>
+              <td class="px-4 py-2">¥0.0060/cm</td>
+              <td class="px-4 py-2">-</td>
+            </tr>
+          </tbody>
         </table>
 
         <!-- 嵌入计算器.html -->
-        <div class="calculator mt-8 p-4">
-            <h2 class="text-xl font-bold mb-4">价格计算器</h2>
-            <iframe id="calculatorFrame" src="计算器.html" width="100%" height="600" frameborder="0"></iframe>
-        </div>
-
-        <hr class="my-8 border-gray-300">
-        <div class="contact">
-            福建浔兴拉链科技股份有限公司<br>
-            fjsbs741@sbszipper.com<br>
-            联系人：谢剑平<br>
-            手机：15396377670<br>
-        </div>
+      </div>
     </div>
+    <div class="iframe-container">
+      <iframe id="calculatorFrame" src="计算器.html" title="拉链价格计算器"></iframe>
+    </div>
+  </div>
+  <script>
+    const productRows = document.querySelectorAll('table tbody tr');
+    const calculatorFrame = document.getElementById('calculatorFrame');
+    const searchInput = document.getElementById('searchInput');
+    const noResults = document.getElementById('noResults');
 
-    <script>
-        const productRows = document.querySelectorAll('table tbody tr');
-        const calculatorFrame = document.getElementById('calculatorFrame');
-        const searchInput = document.getElementById('searchInput');
+    productRows.forEach(row => {
+      row.addEventListener('click', function () {
+        const productData = this.dataset.product.split('|');
+        const productName = this.querySelector('td:nth-child(2)').textContent;
+        const productInfo = {
+          baseLength: 30,
+          basePrice: parseFloat(productData[1]),
+          adjustPrice: parseFloat(productData[2]),
+          name: productName
+        };
+        calculatorFrame.contentWindow.postMessage(productInfo, '*');
+      });
+    });
 
-        productRows.forEach(row => {
-            row.addEventListener('click', function () {
-                const productData = this.dataset.product.split('|');
-                const productName = this.querySelector('td:nth-child(2)').textContent;
-                const productInfo = {
-                    baseLength: 30,
-                    basePrice: parseFloat(productData[1]),
-                    adjustPrice: parseFloat(productData[2]),
-                    name: productName
-                };
-                calculatorFrame.contentWindow.postMessage(productInfo, '*');
-            });
+    searchInput.addEventListener('input', function () {
+      const searchTerm = this.value.toLowerCase();
+      let hasResults = false;
+      productRows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        let isMatch = false;
+        cells.forEach(cell => {
+          if (cell.textContent.toLowerCase().includes(searchTerm)) {
+            isMatch = true;
+          }
         });
-
-        searchInput.addEventListener('input', function () {
-            const searchTerm = this.value.toLowerCase();
-            productRows.forEach(row => {
-                const cells = row.querySelectorAll('td');
-                let isMatch = false;
-                cells.forEach(cell => {
-                    if (cell.textContent.toLowerCase().includes(searchTerm)) {
-                        isMatch = true;
-                    }
-                });
-                if (isMatch) {
-                    row.style.display = '';
-                } else {
-                    row.style.display = 'none';
-                }
-            });
-        });
-    </script>
+        if (isMatch) {
+          row.style.display = '';
+          hasResults = true;
+        } else {
+          row.style.display = 'none';
+        }
+      });
+      if (hasResults) {
+        noResults.style.display = 'none';
+      } else {
+        noResults.style.display = 'block';
+      }
+    });
+  </script>
 </body>
 
-</html>
-   
+</html>    
