@@ -150,9 +150,9 @@
       }
 
       const diff = zipLength - baseLength;
-      const adjust = diff * adjustPrice;
-      const unitPrice = basePrice + adjust + sliderPrice;
-      const total = unitPrice * quantity;
+      const adjust = parseFloat((diff * adjustPrice).toFixed(4));
+      const unitPrice = parseFloat((basePrice + adjust + sliderPrice).toFixed(4));
+      const total = parseFloat((unitPrice * quantity).toFixed(4));
 
       const formula = `
 每条总价 = 基准价 + (当前长度 - 基准长度) × 加减价 + 拉头价
