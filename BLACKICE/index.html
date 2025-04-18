@@ -69,7 +69,7 @@
       margin-left: 240px;
       padding: 64px;
       /* 减小中间栏目的宽度 */
-      width: calc(60% - 240px);
+      width: calc(75% - 240px);
       flex-shrink: 0;
     }
 
@@ -114,7 +114,7 @@
       position: fixed;
       top: 0;
       right: 0;
-      width: 40%;
+      width: 20%;
       height: 100%;
       /* 删除边框样式 */
     }
@@ -167,6 +167,26 @@
       color: red;
       font-size: 18px;
       margin-top: 20px;
+    }
+
+    table {
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th,
+    td {
+      border: 1px solid #333;
+      padding: 12px;
+      text-align: left;
+    }
+
+    th {
+      background-color: #1a1a1a;
+    }
+
+    tr:hover {
+      background-color: #222;
     }
   </style>
 </head>
