@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>超市小票生成器</title>
+    <style>
+        body {
+            font-family: 'Courier New', Courier, monospace;
+            background-color: #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+       .receipt {
+            width: 80%;
+            max-width: 320px;
+            background-color: white;
+            padding: 15px;
+            margin: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border: 1px solid #ccc;
+            text-align: left;
+        }
+
+       .header {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+       .store-info {
+            font-size: 0.9em;
+            margin-bottom: 10px;
+        }
+
+       .item {
+            border-bottom: 1px dotted #ccc;
+            padding: 5px 0;
+        }
+
+       .item:last-child {
+            border-bottom: none;
+        }
+
+       .item-details {
+            display: flex;
+            justify-content: space-between;
+        }
+
+       .barcode {
+            color: gray;
+            font-size: 0.8em;
+        }
+
+       .total {
+            text-align: right;
+            margin-top: 10px;
+        }
+
+       .input-section {
+            margin-bottom: 20px;
+        }
+
+       .input-section label {
+            display: block;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="input-section">
+        <label for="storeName">超市名称:</label>
+        <input type="text" id="storeName" placeholder="请输入超市名称" required>
+        <label for="dateTime">时间:</label>
+        <input type="text" id="dateTime" placeholder="请输入时间（格式如2021/09/28 15:19:41）" required>
+        <label for="totalPrice">总价格:</label>
+        <input type="number" step="0.01" id="totalPrice" placeholder="请输入总价格" required>
+        <button onclick="generateReceipt()">生成小票并打印</button>
+    </div>
+    <div class="receipt" id="receipt">
+        <div class="header">
+            <h2>欢迎光临</h2>
+            <div class="store-info">
+                <span id="storeNameDisplay"></span><br>
+                日期: <span id="datetime"></span>
+            </div>
+        </div>
+        <div class="items" id="items"></div>
+        <div class="total">
+            <div class="total-row">
+                <span>总金额:</span>
+                <span id="totalAmount">0.00</span> 元
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const drinks = [
+            "可口可乐", "百事可乐", "雪碧", "芬达橙味",
+            "农夫山泉4L装", "康师傅冰红茶", "红牛维生素",
+            "青岛啤酒经典", "椰树椰汁", "王老吉凉茶"
+        ];
+
+        const wines = [
+            "五粮液52度", "泸州老窖特曲", "剑南春珍藏级",
+            "洋河蓝色经典", "古井贡酒年份", "汾酒青花30"
+        ];
+
+        // 价格生成器（0.5倍数）
+        function generatePrice(min, max) {
+            const steps = (max - min) * 2 + 1;
+            const randomStep = Math.floor(Math.random() * steps);
+            return min + 0.5 * randomStep;
+        }
+
+        function generateReceipt() {
+            const storeName = document.getElementById('storeName').value;
+            const dateTime = document.getElementById('dateTime').value;
+            const totalPrice = parseFloat(document.getElementById('totalPrice').value);
+
+            const itemsContainer = document.getElementById('items');
+            itemsContainer.innerHTML = '';
+
+            const items = [];
+            let remainingPrice = totalPrice;
+
+            // 必选1个酒类（50 - 90元，0.5倍数）
+            const winePrice = generatePrice(50, 90);
+            items.push({
+                name: wines[Math.floor(Math.random() * wines.length)],
+                price: winePrice
+            });
+            remainingPrice -= winePrice;
+
+            // 生成1 - 3个饮料（5 - 8元，0.5倍数）
+            const drinkCount = Math.floor(Math.random() * 3) + 1;
+            for (let i = 0; i < drinkCount; i++) {
+                const price = generatePrice(5, 8);
+                items.push({
+                    name: drinks[Math.floor(Math.random() * drinks.length)],
+                    price: price
+                });
+                remainingPrice -= price;
+            }
+
+            // 补足剩余金额（转换为0.5倍数）
+            remainingPrice = Math.round(remainingPrice * 2) / 2;
+            if (remainingPrice > 0) {
+                items.push({
+                    name: "其他商品",
+                    price: remainingPrice
+                });
+            }
+
+            // 生成商品列表
+            items.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.classList.add('item');
+                div.innerHTML = `
+                    <div class="item-details">
+                        <span>【${index + 1}】${item.name}</span>
+                        <span>数量: 1</span>
+                        <span>单价: ${item.price.toFixed(2)} 元</span>
+                        <span>成交价: ${item.price.toFixed(2)} 元</span>
+                    </div>
+                    <div class="barcode">${Math.random().toString().slice(2, 14)}</div>
+                `;
+                itemsContainer.appendChild(div);
+            });
+
+            // 更新固定内容
+            document.getElementById('storeNameDisplay').textContent = storeName;
+            document.getElementById('datetime').textContent = dateTime;
+            document.getElementById('totalAmount').textContent = totalPrice.toFixed(2);
+
+            setTimeout(() => window.print(), 300);
+        }
+    </script>
+</body>
+
+</html>
