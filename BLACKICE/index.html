@@ -148,23 +148,19 @@
     baseLength: 30,
     storageKey: 'calculationHistory'
   };
-
-  // 产品数据
   const products = [
-    { code: 'SBS-0010', name: 'D5#开口箭形牙（M-H)钩型上止', specification: '30', price: 2.224, cmPrice: 0.027, remark: '不含拉头' },
-    { code: 'SBS-0051', name: 'D5#开口仿金属M-H牙指定牙钩型上止', specification: '30', price: 2.216, cmPrice: 0.027, remark: '不含拉头' },
-    { code: 'SBS-0050', name: 'D5#闭口仿金属M-H牙', specification: '30', price: 2.1245, cmPrice: 0.027, remark: '不含拉头' },
-    { code: 'SBS-0040', name: 'D5#开口仿金属M-H牙钩型上止', specification: '30', price: 1.9125, cmPrice: 0.027, remark: '不含拉头' },
-    { code: 'SBS-0061', name: 'D5#双开口仿金属M-H牙指定牙钩型上止', specification: '30', price: 2.44, cmPrice: 0.027, remark: '不含拉头' },
-    { code: 'SBS-0060', name: 'D5#双开口仿金属M-H牙钩型上止', specification: '30', price: 2.12, cmPrice: 0.027, remark: '不含拉头' },
-    { code: 'SBS-0080', name: 'D3#互拼开口钩型上止+旋转头', specification: '30', price: 1.505, cmPrice: 0.011, remark: '不含拉头' },
-    { code: 'SBS-0020', name: 'D3#互拼开口左插钩型上止', specification: '30', price: 1.505, cmPrice: 0.011, remark: '不含拉头' },
-    { code: 'SBS-0030', name: 'N3#AD注塑背拉开口直边上止', specification: '30', price: 1.274, cmPrice: 0.006, remark: '不含拉头' },
-    { code: 'SBS-101', name: '5#多凹圆点尖尾烤漆', specification: '', price: 0.65, cmPrice: 0, remark: '' },
-    { code: 'SBS-102', name: '旋转头葫芦片冷喷', specification: '', price: 0.6, cmPrice: 0, remark: '' },
-    { code: 'SBS-103', name: '无字葫芦片（烤漆）', specification: '', price: 0.3, cmPrice: 0, remark: '' }
-  ];
-
+  { code: 'SBS-001', name: '葫芦片（无镍黑镍色）', zipperName: '3号尼龙开尾反装 注塑上止', specification: '30cm', price: 1.574, cmPrice: 0.006, material: 'N3#AD注塑背拉开口直边上止' },
+  { code: 'SBS-002', name: '葫芦片（顺色冷喷亮漆）', zipperName: '3#树脂 开尾 左插 互拼',      specification: '30cm', price: 1.505, cmPrice: 0.011, material: 'D3#互拼开口左插钩型上止' },
+  { code: 'SBS-003', name: '多凹圆点（顺色挂喷哑漆）', zipperName: '5#树脂仿金属 闭尾 M-H牙 注塑上下止', specification: '30cm', price: 2.774, cmPrice: 0.027, material: 'D5#闭口仿金属M-H牙 P05DAA01996 5#多凹圆点尖尾长方形自动片' },
+  { code: 'SBS-004', name: '多凹圆点（顺色挂喷哑漆）', zipperName: '5#树脂仿金属 开尾 M-H牙 勾型上止', specification: '30cm', price: 2.563, cmPrice: 0.027, material: 'D5#开口仿金属M-H牙钩型上止 P05DAA01996 5#多凹圆点尖尾长方形自动片' },
+  { code: 'SBS-005', name: '多凹圆点（顺色挂喷哑漆）', zipperName: '5#树脂仿金属 开尾 M-H牙指定牙…勾型上止', specification: '30cm', price: 2.866, cmPrice: 0.027, material: 'D5#开口仿金属M-H牙指定牙钩型上止 P05DAA01996 5#多凹圆点尖尾长方形自动片' },
+  { code: 'SBS-006', name: '多凹圆点（顺色挂喷哑漆）', zipperName: '5#树脂仿金属 双开尾 M-H牙 勾型上止', specification: '30cm', price: 3.420, cmPrice: 0.027, material: 'D5#双开口仿金属M-H牙钩型上止 P05DAA01996 5#多凹圆点尖尾长方形自动片' },
+  { code: 'SBS-007', name: '无字葫芦头（顺色冷喷亮漆）', zipperName: '3#尼龙反装 开尾 直边上止',      specification: '30cm', price: 1.274, cmPrice: 0.006, material: 'N3#AD注塑背拉开口直边上止' },
+  { code: 'SBS-008', name: '葫芦片（顺色冷喷亮漆）', zipperName: '3#树脂 开尾 旋转头+互拼',        specification: '30cm', price: 2.105, cmPrice: 0.010, material: 'D3#互拼开口钩型上止' },
+  { code: 'SBS-009', name: '无字葫芦头（顺色挂喷哑漆）', zipperName: '3#尼龙反装 闭尾 无上下止 拉头在中间', specification: '30cm', price: 0.900, cmPrice: 0.006, material: '' },
+  { code: 'SBS-010', name: '3#竖孔椭圆PH6016（无镍白）', zipperName: '3号尼龙反装顺滑拉链闭尾，两端闭合', specification: '30cm', price: 2.350, cmPrice: 0.085, material: '' },
+  { code: 'SBS-011', name: '3#竖孔椭圆PH6016（无镍白）', zipperName: '3号尼龙反装注塑普通拉链开尾，注塑上止', specification: '30cm', price: 1.774, cmPrice: 0.006, material: '' }
+];
   let state = {
     selectedProduct: null,
     selectedPullTab: null,
