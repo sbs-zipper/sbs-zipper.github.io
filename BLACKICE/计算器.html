@@ -81,17 +81,17 @@
 
   <div class="form-group">
     <label>基准价格（元/条）</label>
-    <input type="number" id="basePrice" value="3.6" step="0.01" placeholder="请输入基准价格">
+    <input type="number" id="basePrice" value="3.6" step="0.0001" placeholder="请输入基准价格">
   </div>
 
   <div class="form-group">
     <label>每厘米加减价（元）</label>
-    <input type="number" id="adjustPrice" value="0.05" step="0.01" placeholder="正数为加价，负数为减价">
+    <input type="number" id="adjustPrice" value="0.05" step="0.0001" placeholder="正数为加价，负数为减价">
   </div>
 
   <div class="form-group">
     <label>拉头价格（元）</label>
-    <input type="number" id="sliderPrice" value="0" step="0.01" placeholder="特殊拉头额外费用">
+    <input type="number" id="sliderPrice" value="0" step="0.0001" placeholder="特殊拉头额外费用">
   </div>
 
   <div class="form-group slider-container">
@@ -156,12 +156,12 @@
 
       const formula = `
 每条总价 = 基准价 + (当前长度 - 基准长度) × 加减价 + 拉头价
-          = ${basePrice.toFixed(2)} + (${zipLength} - ${baseLength}) × ${adjustPrice.toFixed(2)} + ${sliderPrice.toFixed(2)}
-          = ${basePrice.toFixed(2)} + (${diff} × ${adjustPrice.toFixed(2)}) + ${sliderPrice.toFixed(2)}
-          = ${(basePrice + adjust).toFixed(2)} + ${sliderPrice.toFixed(2)}
-          = ${unitPrice.toFixed(2)} 元/条
+          = ${basePrice.toFixed(4)} + (${zipLength} - ${baseLength}) × ${adjustPrice.toFixed(4)} + ${sliderPrice.toFixed(4)}
+          = ${basePrice.toFixed(4)} + (${diff} × ${adjustPrice.toFixed(4)}) + ${sliderPrice.toFixed(4)}
+          = ${(basePrice + adjust).toFixed(4)} + ${sliderPrice.toFixed(4)}
+          = ${unitPrice.toFixed(4)} 元/条
 
-总价 = 每条总价 × 数量 = ${unitPrice.toFixed(2)} × ${quantity} = ¥ ${total.toFixed(2)}
+总价 = 每条总价 × 数量 = ${unitPrice.toFixed(4)} × ${quantity} = ¥ ${total.toFixed(4)}
 `;
 
       document.getElementById('calculationResult').textContent = formula;
@@ -169,4 +169,5 @@
   </script>
 </body>
 
-</html>    
+</html>
+    
